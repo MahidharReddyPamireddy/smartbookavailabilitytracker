@@ -1,0 +1,4361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CampusBook AI — Smart Book Availability Tracker</title>
+  <style>
+    /* ==========================================================================
+       CAMPUSBOOK AI — MODERN SAAS DESIGN SYSTEM & CSS STYLESHEET
+       Palette: Deep Navy (#0f172a), Royal Blue (#2563eb), Purple (#7c3aed), Slate (#f8fafc)
+       Zero external dependencies - 100% self-contained
+       ========================================================================== */
+
+    :root {
+      --primary-navy: #0f172a;
+      --sidebar-navy: #111827;
+      --navy-hover: #1e293b;
+      --blue-accent: #2563eb;
+      --blue-hover: #1d4ed8;
+      --blue-light: #eff6ff;
+      --purple-accent: #7c3aed;
+      --purple-light: #f5f3ff;
+      --purple-border: #ddd6fe;
+
+      --bg-main: #f8fafc;
+      --card-bg: #ffffff;
+      --border-color: #e2e8f0;
+      --border-dark: #cbd5e1;
+
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --text-light: #94a3b8;
+      --text-white: #ffffff;
+
+      --status-available-bg: #ecfdf5;
+      --status-available-text: #065f46;
+      --status-available-border: #a7f3d0;
+
+      --status-low-bg: #fffbeb;
+      --status-low-text: #92400e;
+      --status-low-border: #fde68a;
+
+      --status-out-bg: #fef2f2;
+      --status-out-text: #991b1b;
+      --status-out-border: #fecaca;
+
+      --status-high-bg: #f5f3ff;
+      --status-high-text: #5b21b6;
+      --status-high-border: #ddd6fe;
+
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+      --radius-full: 9999px;
+
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
+      --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+
+      --transition-fast: 0.15s ease;
+      --transition-normal: 0.25s ease;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      line-height: 1.5;
+      font-size: 14px;
+      overflow-x: hidden;
+    }
+
+    /* Layout Structure */
+    .app-container {
+      display: flex;
+      min-height: 100vh;
+      width: 100vw;
+      overflow-x: hidden;
+    }
+
+    /* Sidebar Navigation */
+    .sidebar {
+      width: 260px;
+      background-color: var(--sidebar-navy);
+      color: var(--text-white);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      transition: transform var(--transition-normal);
+      z-index: 40;
+    }
+
+    .sidebar-header {
+      padding: 24px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .brand-icon {
+      width: 38px;
+      height: 38px;
+      background: linear-gradient(135deg, var(--blue-accent), var(--purple-accent));
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 700;
+      font-size: 18px;
+      box-shadow: 0 4px 10px rgba(37, 99, 235, 0.35);
+    }
+
+    .brand-info h1 {
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      line-height: 1.2;
+    }
+
+    .brand-info span {
+      font-size: 11px;
+      color: var(--text-light);
+      display: block;
+    }
+
+    .sidebar-nav {
+      flex: 1;
+      padding: 16px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      overflow-y: auto;
+    }
+
+    .nav-category {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-light);
+      padding: 12px 12px 6px 12px;
+      font-weight: 600;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 14px;
+      color: #94a3b8;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      font-weight: 500;
+      font-size: 13.5px;
+      transition: all var(--transition-fast);
+      user-select: none;
+      position: relative;
+    }
+
+    .nav-item:hover {
+      background-color: var(--navy-hover);
+      color: var(--text-white);
+    }
+
+    .nav-item.active {
+      background: linear-gradient(90deg, rgba(37, 99, 235, 0.25), rgba(124, 58, 237, 0.15));
+      color: var(--text-white);
+      border-left: 3px solid var(--blue-accent);
+      font-weight: 600;
+    }
+
+    .nav-item-icon {
+      width: 18px;
+      height: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+    }
+
+    .nav-badge {
+      margin-left: auto;
+      background-color: #ef4444;
+      color: white;
+      font-size: 10.5px;
+      font-weight: 700;
+      padding: 1px 7px;
+      border-radius: var(--radius-full);
+      line-height: 1.4;
+    }
+
+    .nav-badge.blue {
+      background-color: var(--blue-accent);
+    }
+
+    .sidebar-footer {
+      padding: 16px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      background-color: rgba(0, 0, 0, 0.15);
+    }
+
+    .system-status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 11.5px;
+      color: #94a3b8;
+    }
+
+    .pulse-dot {
+      width: 8px;
+      height: 8px;
+      background-color: #10b981;
+      border-radius: 50%;
+      box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+      animation: pulseAnimation 2s infinite;
+    }
+
+    @keyframes pulseAnimation {
+      0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+      70% { box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+    }
+
+    /* Main Content Area */
+    .main-wrapper {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      overflow-y: auto;
+      height: 100vh;
+    }
+
+    /* Topbar */
+    .topbar {
+      height: 64px;
+      background-color: var(--card-bg);
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 28px;
+      position: sticky;
+      top: 0;
+      z-index: 30;
+    }
+
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .mobile-menu-toggle {
+      display: none;
+      background: none;
+      border: none;
+      font-size: 20px;
+      cursor: pointer;
+      color: var(--text-main);
+      padding: 4px;
+    }
+
+    .page-title-badge {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--primary-navy);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .global-search-container {
+      position: relative;
+      width: 320px;
+    }
+
+    .global-search-container input {
+      width: 100%;
+      padding: 8px 12px 8px 36px;
+      border-radius: var(--radius-full);
+      border: 1px solid var(--border-color);
+      background-color: var(--bg-main);
+      font-size: 13px;
+      transition: all var(--transition-fast);
+    }
+
+    .global-search-container input:focus {
+      outline: none;
+      border-color: var(--blue-accent);
+      background-color: #ffffff;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+
+    .global-search-icon {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-light);
+      pointer-events: none;
+      font-size: 13px;
+    }
+
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .topbar-btn {
+      background: none;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 7px 12px;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      position: relative;
+    }
+
+    .topbar-btn:hover {
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      border-color: var(--border-dark);
+    }
+
+    .topbar-btn .btn-badge {
+      background-color: #ef4444;
+      color: white;
+      font-size: 10px;
+      padding: 1px 5px;
+      border-radius: var(--radius-full);
+      font-weight: 700;
+    }
+
+    .user-pill {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 4px 8px 4px 4px;
+      border-radius: var(--radius-full);
+      background-color: var(--bg-main);
+      border: 1px solid var(--border-color);
+    }
+
+    .user-avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--purple-accent), var(--blue-accent));
+      color: white;
+      font-size: 12px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .user-name {
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--text-main);
+      margin-right: 4px;
+    }
+
+    /* Page Content Body */
+    .content-container {
+      padding: 28px;
+      flex: 1;
+    }
+
+    .page-section {
+      display: none;
+      animation: fadeIn 0.25s ease-out;
+    }
+
+    .page-section.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Page Headers */
+    .section-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .section-header-text h2 {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--primary-navy);
+      letter-spacing: -0.02em;
+    }
+
+    .section-header-text p {
+      font-size: 13.5px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 9px 16px;
+      border-radius: var(--radius-md);
+      font-size: 13.5px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      border: 1px solid transparent;
+      user-select: none;
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background-color: var(--blue-accent);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background-color: var(--blue-hover);
+      box-shadow: 0 4px 10px rgba(37, 99, 235, 0.25);
+    }
+
+    .btn-secondary {
+      background-color: white;
+      border-color: var(--border-color);
+      color: var(--text-main);
+    }
+
+    .btn-secondary:hover {
+      background-color: var(--bg-main);
+      border-color: var(--border-dark);
+    }
+
+    .btn-purple {
+      background-color: var(--purple-accent);
+      color: white;
+    }
+
+    .btn-purple:hover {
+      background-color: #6d28d9;
+      box-shadow: 0 4px 10px rgba(124, 58, 237, 0.25);
+    }
+
+    .btn-danger {
+      background-color: #ef4444;
+      color: white;
+    }
+
+    .btn-danger:hover {
+      background-color: #dc2626;
+    }
+
+    .btn-sm {
+      padding: 5px 10px;
+      font-size: 12px;
+      border-radius: var(--radius-sm);
+    }
+
+    .btn:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+
+    /* Dashboard KPI Grid */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 18px;
+      margin-bottom: 24px;
+    }
+
+    .kpi-card {
+      background: var(--card-bg);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      border: 1px solid var(--border-color);
+      box-shadow: var(--shadow-sm);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+    }
+
+    .kpi-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .kpi-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .kpi-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .kpi-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+    }
+
+    .kpi-value {
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--primary-navy);
+      line-height: 1.1;
+      margin-bottom: 6px;
+    }
+
+    .kpi-footer {
+      font-size: 12px;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .kpi-trend {
+      font-weight: 600;
+    }
+
+    .kpi-trend.positive { color: #10b981; }
+    .kpi-trend.warning { color: #f59e0b; }
+    .kpi-trend.danger { color: #ef4444; }
+
+    /* Dashboard Layout Columns */
+    .dashboard-split {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 24px;
+      margin-bottom: 24px;
+    }
+
+    .dashboard-card {
+      background-color: var(--card-bg);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border-color);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+    }
+
+    .card-header-clean {
+      padding: 18px 22px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .card-header-clean h3 {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--primary-navy);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .card-header-clean .card-subtitle {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-weight: 400;
+    }
+
+    .card-body-clean {
+      padding: 20px 22px;
+    }
+
+    /* CSS Pure Chart (Demand Forecasting Visualizer) */
+    .chart-container {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .chart-item {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .chart-label-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12.5px;
+      font-weight: 600;
+    }
+
+    .chart-title-sub {
+      color: var(--text-muted);
+      font-weight: normal;
+      font-size: 11px;
+      margin-left: 6px;
+    }
+
+    .chart-bar-track {
+      height: 12px;
+      background-color: #f1f5f9;
+      border-radius: var(--radius-full);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+    }
+
+    .chart-bar-fill {
+      height: 100%;
+      border-radius: var(--radius-full);
+      transition: width 0.6s ease;
+    }
+
+    .chart-bar-fill.safe {
+      background: linear-gradient(90deg, #10b981, #34d399);
+    }
+
+    .chart-bar-fill.medium {
+      background: linear-gradient(90deg, #f59e0b, #fbbf24);
+    }
+
+    .chart-bar-fill.risk {
+      background: linear-gradient(90deg, #ef4444, #f87171);
+    }
+
+    .chart-legend {
+      display: flex;
+      gap: 16px;
+      font-size: 11.5px;
+      color: var(--text-muted);
+      margin-top: 10px;
+      padding-top: 12px;
+      border-top: 1px dashed var(--border-color);
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .legend-color {
+      width: 10px;
+      height: 10px;
+      border-radius: 2px;
+    }
+
+    /* Alert / Activity Lists */
+    .activity-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      max-height: 380px;
+      overflow-y: auto;
+    }
+
+    .activity-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 10px;
+      border-radius: var(--radius-md);
+      background-color: #f8fafc;
+      border: 1px solid #f1f5f9;
+    }
+
+    .activity-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      flex-shrink: 0;
+    }
+
+    .activity-body {
+      flex: 1;
+    }
+
+    .activity-text {
+      font-size: 12.5px;
+      color: var(--text-main);
+      font-weight: 500;
+    }
+
+    .activity-time {
+      font-size: 11px;
+      color: var(--text-light);
+      margin-top: 2px;
+    }
+
+    /* Status Badges */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 8px;
+      border-radius: var(--radius-full);
+      font-size: 11px;
+      font-weight: 600;
+      line-height: 1.3;
+      border: 1px solid transparent;
+    }
+
+    .badge-available {
+      background-color: var(--status-available-bg);
+      color: var(--status-available-text);
+      border-color: var(--status-available-border);
+    }
+
+    .badge-low {
+      background-color: var(--status-low-bg);
+      color: var(--status-low-text);
+      border-color: var(--status-low-border);
+    }
+
+    .badge-out {
+      background-color: var(--status-out-bg);
+      color: var(--status-out-text);
+      border-color: var(--status-out-border);
+    }
+
+    .badge-high {
+      background-color: var(--status-high-bg);
+      color: var(--status-high-text);
+      border-color: var(--status-high-border);
+    }
+
+    .badge-neutral {
+      background-color: #f1f5f9;
+      color: #475569;
+      border-color: #e2e8f0;
+    }
+
+    /* Filter Bar */
+    .filter-bar {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 14px 18px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .filter-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .filter-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .form-select, .form-input {
+      padding: 7px 12px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-color);
+      background-color: white;
+      font-size: 13px;
+      color: var(--text-main);
+      outline: none;
+      transition: border-color var(--transition-fast);
+    }
+
+    .form-select:focus, .form-input:focus {
+      border-color: var(--blue-accent);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+
+    /* Books Card Grid */
+    .books-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+      gap: 20px;
+      margin-bottom: 24px;
+    }
+
+    .book-card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      transition: all var(--transition-fast);
+    }
+
+    .book-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-md);
+      border-color: #cbd5e1;
+    }
+
+    .book-card-header {
+      padding: 18px 18px 12px 18px;
+      border-bottom: 1px solid #f1f5f9;
+      position: relative;
+    }
+
+    .book-category {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--purple-accent);
+      margin-bottom: 4px;
+    }
+
+    .book-title {
+      font-size: 15.5px;
+      font-weight: 700;
+      color: var(--primary-navy);
+      line-height: 1.3;
+      margin-bottom: 4px;
+    }
+
+    .book-author {
+      font-size: 12.5px;
+      color: var(--text-muted);
+    }
+
+    .book-card-body {
+      padding: 16px 18px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .book-meta-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      font-size: 11.5px;
+      background-color: #f8fafc;
+      padding: 8px 12px;
+      border-radius: var(--radius-md);
+    }
+
+    .book-meta-item span {
+      color: var(--text-muted);
+      display: block;
+      font-size: 10px;
+    }
+
+    .book-meta-item strong {
+      color: var(--text-main);
+      font-weight: 600;
+    }
+
+    .stock-indicator-wrap {
+      margin-top: 4px;
+    }
+
+    .stock-indicator-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11.5px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .stock-bar-track {
+      height: 8px;
+      background-color: #e2e8f0;
+      border-radius: var(--radius-full);
+      overflow: hidden;
+    }
+
+    .stock-bar-fill {
+      height: 100%;
+      border-radius: var(--radius-full);
+    }
+
+    .book-card-footer {
+      padding: 14px 18px;
+      background-color: #fcfcfd;
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      gap: 8px;
+    }
+
+    /* Table Styles */
+    .table-container {
+      background-color: var(--card-bg);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border-color);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 13px;
+    }
+
+    .data-table th {
+      background-color: #f8fafc;
+      padding: 12px 16px;
+      font-weight: 600;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border-color);
+      font-size: 11.5px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .data-table td {
+      padding: 14px 16px;
+      border-bottom: 1px solid #f1f5f9;
+      color: var(--text-main);
+      vertical-align: middle;
+    }
+
+    .data-table tr:hover td {
+      background-color: #f8fafc;
+    }
+
+    .data-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    /* AI Chatbot View */
+    .chatbot-layout {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 24px;
+      height: calc(100vh - 160px);
+      min-height: 540px;
+    }
+
+    .chat-window {
+      background-color: var(--card-bg);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border-color);
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .chat-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: linear-gradient(90deg, #ffffff, #fbfaff);
+    }
+
+    .chat-header-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .bot-avatar {
+      width: 38px;
+      height: 38px;
+      background: linear-gradient(135deg, var(--blue-accent), var(--purple-accent));
+      border-radius: 50%;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      box-shadow: 0 4px 10px rgba(124, 58, 237, 0.25);
+    }
+
+    .chat-messages {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      background-color: #f8fafc;
+    }
+
+    .message-row {
+      display: flex;
+      gap: 12px;
+      max-width: 82%;
+    }
+
+    .message-row.user {
+      margin-left: auto;
+      flex-direction: row-reverse;
+    }
+
+    .message-bubble {
+      padding: 12px 16px;
+      border-radius: var(--radius-lg);
+      font-size: 13.5px;
+      line-height: 1.5;
+      position: relative;
+    }
+
+    .message-row.bot .message-bubble {
+      background-color: white;
+      color: var(--text-main);
+      border: 1px solid var(--border-color);
+      border-top-left-radius: 2px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .message-row.user .message-bubble {
+      background: linear-gradient(135deg, var(--blue-accent), #1d4ed8);
+      color: white;
+      border-top-right-radius: 2px;
+      box-shadow: 0 2px 8px rgba(37, 99, 235, 0.2);
+    }
+
+    .message-time {
+      font-size: 10px;
+      color: var(--text-light);
+      margin-top: 4px;
+      text-align: right;
+    }
+
+    .message-row.bot .message-time {
+      text-align: left;
+    }
+
+    .chat-chip-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 10px;
+    }
+
+    .chat-chip {
+      background-color: #eff6ff;
+      color: var(--blue-accent);
+      border: 1px solid #bfdbfe;
+      padding: 4px 10px;
+      border-radius: var(--radius-full);
+      font-size: 11.5px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+
+    .chat-chip:hover {
+      background-color: var(--blue-accent);
+      color: white;
+    }
+
+    .chat-input-area {
+      padding: 16px 20px;
+      background-color: white;
+      border-top: 1px solid var(--border-color);
+    }
+
+    .chat-input-form {
+      display: flex;
+      gap: 10px;
+    }
+
+    .chat-input-form input {
+      flex: 1;
+      padding: 11px 16px;
+      border-radius: var(--radius-full);
+      border: 1px solid var(--border-color);
+      font-size: 13.5px;
+      outline: none;
+      transition: border-color var(--transition-fast);
+    }
+
+    .chat-input-form input:focus {
+      border-color: var(--blue-accent);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+    }
+
+    .chat-helper-panel {
+      background-color: var(--card-bg);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border-color);
+      box-shadow: var(--shadow-sm);
+      padding: 20px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .helper-card {
+      background-color: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: var(--radius-md);
+      padding: 14px;
+    }
+
+    .helper-card h4 {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--primary-navy);
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .helper-card p {
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    /* Modals & Dialogs */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: rgba(15, 23, 42, 0.55);
+      backdrop-filter: blur(3px);
+      z-index: 100;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal-box {
+      background-color: var(--card-bg);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border-color);
+      width: 100%;
+      max-width: 540px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: var(--shadow-xl);
+      animation: modalSlide 0.2s ease-out;
+    }
+
+    @keyframes modalSlide {
+      from { transform: scale(0.95); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .modal-header {
+      padding: 18px 24px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .modal-header h3 {
+      font-size: 16.5px;
+      font-weight: 700;
+      color: var(--primary-navy);
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 20px;
+      color: var(--text-light);
+      cursor: pointer;
+      padding: 2px 6px;
+      border-radius: var(--radius-sm);
+    }
+
+    .modal-close:hover {
+      color: var(--text-main);
+      background-color: #f1f5f9;
+    }
+
+    .modal-body {
+      padding: 22px 24px;
+    }
+
+    .modal-footer {
+      padding: 16px 24px;
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      background-color: #f8fafc;
+      border-bottom-left-radius: var(--radius-lg);
+      border-bottom-right-radius: var(--radius-lg);
+    }
+
+    /* Forms */
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--primary-navy);
+      margin-bottom: 6px;
+    }
+
+    .form-label span.req {
+      color: #ef4444;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .form-help {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    /* Toast Container */
+    .toast-container {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 200;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      pointer-events: none;
+    }
+
+    .toast {
+      pointer-events: auto;
+      background-color: var(--primary-navy);
+      color: white;
+      padding: 12px 18px;
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-lg);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 13px;
+      animation: toastIn 0.3s ease-out;
+      min-width: 300px;
+      max-width: 440px;
+      border-left: 4px solid var(--blue-accent);
+    }
+
+    .toast.success { border-left-color: #10b981; }
+    .toast.warning { border-left-color: #f59e0b; }
+    .toast.danger { border-left-color: #ef4444; }
+
+    @keyframes toastIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    /* Floating Widget Button for Chatbot */
+    .chat-floating-btn {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--blue-accent), var(--purple-accent));
+      color: white;
+      border: none;
+      box-shadow: 0 10px 25px rgba(37, 99, 235, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      cursor: pointer;
+      z-index: 80;
+      transition: transform var(--transition-fast);
+    }
+
+    .chat-floating-btn:hover {
+      transform: scale(1.08);
+    }
+
+    /* Empty States */
+    .empty-state {
+      text-align: center;
+      padding: 48px 24px;
+      color: var(--text-muted);
+    }
+
+    .empty-icon {
+      font-size: 44px;
+      margin-bottom: 12px;
+      opacity: 0.6;
+    }
+
+    .empty-state h4 {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--primary-navy);
+      margin-bottom: 4px;
+    }
+
+    .empty-state p {
+      font-size: 13px;
+      max-width: 400px;
+      margin: 0 auto 16px auto;
+    }
+
+    /* Print Styles */
+    @media print {
+      .sidebar, .topbar, .filter-bar, .header-actions, .chat-floating-btn, .modal-overlay, .toast-container {
+        display: none !important;
+      }
+      .main-wrapper {
+        height: auto !important;
+        overflow: visible !important;
+      }
+      .content-container {
+        padding: 0 !important;
+      }
+      .dashboard-card, .table-container {
+        box-shadow: none !important;
+        border: 1px solid #ccc !important;
+      }
+    }
+
+    /* Responsive Queries */
+    @media (max-width: 1024px) {
+      .dashboard-split {
+        grid-template-columns: 1fr;
+      }
+      .chatbot-layout {
+        grid-template-columns: 1fr;
+        height: auto;
+      }
+      .chat-window {
+        height: 600px;
+      }
+      .chat-helper-panel {
+        display: none;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .sidebar {
+        position: fixed;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        transform: translateX(-100%);
+      }
+      .sidebar.open {
+        transform: translateX(0);
+      }
+      .mobile-menu-toggle {
+        display: block;
+      }
+      .topbar {
+        padding: 0 16px;
+      }
+      .content-container {
+        padding: 16px;
+      }
+      .global-search-container {
+        display: none;
+      }
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="app-container">
+  <!-- ========================================== -->
+  <!-- SIDEBAR NAVIGATION                        -->
+  <!-- ========================================== -->
+  <aside class="sidebar" id="appSidebar">
+    <div class="sidebar-header">
+      <div class="brand-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+          <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+          <path d="M9 10l2 2 4-4"></path>
+        </svg>
+      </div>
+      <div class="brand-info">
+        <h1>CampusBook AI</h1>
+        <span>Smart Inventory & Forecast</span>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-category">Main Operations</div>
+      <div class="nav-item active" data-target="dashboard">
+        <span class="nav-item-icon">📊</span>
+        <span>Dashboard</span>
+      </div>
+      <div class="nav-item" data-target="catalogue">
+        <span class="nav-item-icon">🔍</span>
+        <span>Find Books</span>
+      </div>
+      <div class="nav-item" data-target="inventory">
+        <span class="nav-item-icon">📦</span>
+        <span>Inventory Mgmt</span>
+      </div>
+
+      <div class="nav-category">Smart Intelligence</div>
+      <div class="nav-item" data-target="forecast">
+        <span class="nav-item-icon">📈</span>
+        <span>AI Demand Forecast</span>
+      </div>
+      <div class="nav-item" data-target="chatbot">
+        <span class="nav-item-icon">🤖</span>
+        <span>AI Assistant Chat</span>
+        <span class="nav-badge blue">Smart</span>
+      </div>
+
+      <div class="nav-category">Services & Alerts</div>
+      <div class="nav-item" data-target="reservations">
+        <span class="nav-item-icon">🔖</span>
+        <span>Reservations</span>
+        <span class="nav-badge" id="navReservationCount" style="display:none;">0</span>
+      </div>
+      <div class="nav-item" data-target="alerts">
+        <span class="nav-item-icon">⚠️</span>
+        <span>Alerts & Reports</span>
+        <span class="nav-badge" id="navAlertCount">0</span>
+      </div>
+      <div class="nav-item" data-target="settings">
+        <span class="nav-item-icon">⚙️</span>
+        <span>Settings & Data</span>
+      </div>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="system-status">
+        <div class="pulse-dot"></div>
+        <span>Local Engine Online (Active)</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ========================================== -->
+  <!-- MAIN APPLICATION WRAPPER                   -->
+  <!-- ========================================== -->
+  <div class="main-wrapper">
+    <!-- Topbar Header -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="mobile-menu-toggle" id="mobileMenuBtn" aria-label="Toggle menu">☰</button>
+        <div class="page-title-badge" id="currentSectionTitle">
+          <span>Dashboard Overview</span>
+        </div>
+        <div class="global-search-container">
+          <span class="global-search-icon">🔍</span>
+          <input type="text" id="globalSearchInput" placeholder="Quick search title, author, ISBN..." autocomplete="off">
+        </div>
+      </div>
+
+      <div class="topbar-right">
+        <button class="topbar-btn" id="notifBellBtn" title="In-App Notifications">
+          <span>🔔</span>
+          <span class="btn-badge" id="bellBadge">0</span>
+        </button>
+        <button class="topbar-btn" id="quickAddBookBtn">
+          <span>➕</span>
+          <span>Add Book</span>
+        </button>
+        <div class="user-pill">
+          <div class="user-avatar">CB</div>
+          <span class="user-name">Campus Desk</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Notification Drawer Modal -->
+    <div class="modal-overlay" id="notifModal">
+      <div class="modal-box" style="max-width: 460px;">
+        <div class="modal-header">
+          <h3>🔔 In-App Notifications</h3>
+          <button class="modal-close" data-close="notifModal">&times;</button>
+        </div>
+        <div class="modal-body" style="padding: 16px;">
+          <p style="font-size: 11.5px; color: var(--text-muted); margin-bottom: 12px; background: #eff6ff; padding: 8px 12px; border-radius: var(--radius-sm);">
+            ℹ️ Notifications are simulated locally inside browser storage to alert students when reserved or waitlisted books become available.
+          </p>
+          <div id="notifList" style="display:flex; flex-direction:column; gap: 8px; max-height: 380px; overflow-y: auto;">
+            <!-- Rendered notifications -->
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary btn-sm" id="clearNotifsBtn">Clear All</button>
+          <button class="btn btn-primary btn-sm" data-close="notifModal">Close</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Dynamic Content Container -->
+    <main class="content-container">
+
+      <!-- ======================================================== -->
+      <!-- SECTION 1: DASHBOARD                                     -->
+      <!-- ======================================================== -->
+      <section id="section-dashboard" class="page-section active">
+        <div class="section-header">
+          <div class="section-header-text">
+            <h2>Campus Library Live Dashboard</h2>
+            <p>Real-time textbook inventory, automated stockout warnings, and heuristic demand forecasts.</p>
+          </div>
+          <div class="header-actions">
+            <button class="btn btn-secondary btn-sm" onclick="App.navigate('catalogue')">🔍 Find Books</button>
+            <button class="btn btn-secondary btn-sm" onclick="App.navigate('alerts')">⚠️ View Alerts</button>
+            <button class="btn btn-primary btn-sm" onclick="App.openAddBookModal()">➕ Add New Title</button>
+          </div>
+        </div>
+
+        <!-- KPI Statistic Cards -->
+        <div class="kpi-grid">
+          <div class="kpi-card">
+            <div class="kpi-top">
+              <span class="kpi-title">Total Unique Books</span>
+              <div class="kpi-icon" style="background:#eff6ff; color:#2563eb;">📚</div>
+            </div>
+            <div class="kpi-value" id="kpiUniqueBooks">0</div>
+            <div class="kpi-footer">
+              <span>Catalogued Academic Titles</span>
+            </div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-top">
+              <span class="kpi-title">Total Physical Copies</span>
+              <div class="kpi-icon" style="background:#f5f3ff; color:#7c3aed;">📖</div>
+            </div>
+            <div class="kpi-value" id="kpiTotalCopies">0</div>
+            <div class="kpi-footer">
+              <span id="kpiTotalCopiesSub">In circulation & on shelves</span>
+            </div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-top">
+              <span class="kpi-title">Available for Checkout</span>
+              <div class="kpi-icon" style="background:#ecfdf5; color:#059669;">✅</div>
+            </div>
+            <div class="kpi-value" id="kpiAvailableCopies" style="color:#059669;">0</div>
+            <div class="kpi-footer">
+              <span class="kpi-trend positive" id="kpiAvailablePercent">0%</span>
+              <span style="margin-left:4px;">ready on shelves</span>
+            </div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-top">
+              <span class="kpi-title">Currently Borrowed</span>
+              <div class="kpi-icon" style="background:#f1f5f9; color:#475569;">🤝</div>
+            </div>
+            <div class="kpi-value" id="kpiBorrowedCopies">0</div>
+            <div class="kpi-footer">
+              <span id="kpiBorrowedPercent">0% active loans</span>
+            </div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-top">
+              <span class="kpi-title">Out of Stock Titles</span>
+              <div class="kpi-icon" style="background:#fef2f2; color:#dc2626;">🚫</div>
+            </div>
+            <div class="kpi-value" id="kpiOutOfStock" style="color:#dc2626;">0</div>
+            <div class="kpi-footer">
+              <span class="kpi-trend danger">Immediate Restock Required</span>
+            </div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-top">
+              <span class="kpi-title">Low-Stock Warnings</span>
+              <div class="kpi-icon" style="background:#fffbeb; color:#d97706;">⚠️</div>
+            </div>
+            <div class="kpi-value" id="kpiLowStock" style="color:#d97706;">0</div>
+            <div class="kpi-footer">
+              <span>At or below safety threshold</span>
+            </div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-top">
+              <span class="kpi-title">Active Reservations</span>
+              <div class="kpi-icon" style="background:#eff6ff; color:#0284c7;">🔖</div>
+            </div>
+            <div class="kpi-value" id="kpiReservations">0</div>
+            <div class="kpi-footer">
+              <span id="kpiWaitlistCount">0 student waitlists</span>
+            </div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-top">
+              <span class="kpi-title">High Stockout Risk</span>
+              <div class="kpi-icon" style="background:#fdf2f8; color:#db2777;">🔥</div>
+            </div>
+            <div class="kpi-value" id="kpiHighDemand">0</div>
+            <div class="kpi-footer">
+              <span class="kpi-trend danger">Predicted run-out &lt; 7 days</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dashboard Split Rows -->
+        <div class="dashboard-split">
+          <!-- Left Column: Demand Forecast Preview -->
+          <div class="dashboard-card">
+            <div class="card-header-clean">
+              <div>
+                <h3>📈 7-Day Demand vs. Available Stock</h3>
+                <span class="card-subtitle">AI demand heuristic calculated from 7-day checkout velocity</span>
+              </div>
+              <button class="btn btn-secondary btn-sm" onclick="App.navigate('forecast')">Full Forecast</button>
+            </div>
+            <div class="card-body-clean">
+              <div class="chart-container" id="dashboardDemandChart">
+                <!-- Dynamically populated chart items -->
+              </div>
+              <div class="chart-legend">
+                <div class="legend-item">
+                  <div class="legend-color" style="background:#ef4444;"></div>
+                  <span>High Risk (Demand exceeds stock)</span>
+                </div>
+                <div class="legend-item">
+                  <div class="legend-color" style="background:#f59e0b;"></div>
+                  <span>Medium Risk (Near threshold)</span>
+                </div>
+                <div class="legend-item">
+                  <div class="legend-color" style="background:#10b981;"></div>
+                  <span>Healthy Stock</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Column: Urgent Alerts & Quick Actions -->
+          <div style="display:flex; flex-direction:column; gap:20px;">
+            <div class="dashboard-card">
+              <div class="card-header-clean">
+                <h3>⚠️ Low-Stock & Urgent Alerts</h3>
+                <button class="btn btn-secondary btn-sm" onclick="App.navigate('alerts')">All Alerts</button>
+              </div>
+              <div class="card-body-clean" style="padding:14px;">
+                <div id="dashboardAlertList" style="display:flex; flex-direction:column; gap:8px;">
+                  <!-- Dynamically populated alerts -->
+                </div>
+              </div>
+            </div>
+
+            <div class="dashboard-card">
+              <div class="card-header-clean">
+                <h3>⚡ Recent Activity Feed</h3>
+                <span class="card-subtitle">Local inventory logs</span>
+              </div>
+              <div class="card-body-clean" style="padding:14px;">
+                <div class="activity-list" id="dashboardActivityFeed">
+                  <!-- Dynamically populated logs -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ======================================================== -->
+      <!-- SECTION 2: BOOK SEARCH & AVAILABILITY TRACKER            -->
+      <!-- ======================================================== -->
+      <section id="section-catalogue" class="page-section">
+        <div class="section-header">
+          <div class="section-header-text">
+            <h2>Search & Availability Tracker</h2>
+            <p>Look up textbooks by title, author, ISBN, or subject. Check physical shelf locations and reserve copies.</p>
+          </div>
+          <div class="header-actions">
+            <button class="btn btn-purple btn-sm" onclick="App.openChatWithPrompt('Find books for Computer Science students')">🤖 Ask AI Assistant</button>
+          </div>
+        </div>
+
+        <!-- Filter & Search Controls -->
+        <div class="filter-bar">
+          <div class="filter-group">
+            <input type="text" id="catalogueSearchInput" class="form-input" style="min-width:240px;" placeholder="Search title, author, ISBN, ID..." oninput="App.applyFilters()">
+            <select id="catalogueCategoryFilter" class="form-select" onchange="App.applyFilters()">
+              <option value="ALL">All Categories</option>
+              <!-- Populated dynamically -->
+            </select>
+            <select id="catalogueStatusFilter" class="form-select" onchange="App.applyFilters()">
+              <option value="ALL">All Availability</option>
+              <option value="AVAILABLE">Available Now</option>
+              <option value="LOW_STOCK">Low Stock</option>
+              <option value="OUT_OF_STOCK">Out of Stock</option>
+              <option value="HIGH_DEMAND">High Demand Risk</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <span class="filter-label">Sort By:</span>
+            <select id="catalogueSort" class="form-select" onchange="App.applyFilters()">
+              <option value="title_asc">Title (A - Z)</option>
+              <option value="available_desc">Available Copies (High to Low)</option>
+              <option value="available_asc">Available Copies (Low to High)</option>
+              <option value="demand_desc">Predicted 7-Day Demand (High to Low)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Catalogue Cards Grid -->
+        <div class="books-grid" id="catalogueGrid">
+          <!-- Populated dynamically -->
+        </div>
+        <div id="catalogueEmptyState" class="empty-state" style="display:none;">
+          <div class="empty-icon">🔍</div>
+          <h4>No matching textbooks found</h4>
+          <p>Try searching with another keyword, clearing the filters, or asking CampusBook AI.</p>
+          <button class="btn btn-secondary btn-sm" onclick="App.resetCatalogueFilters()">Reset Filters</button>
+        </div>
+      </section>
+
+      <!-- ======================================================== -->
+      <!-- SECTION 3: INVENTORY MANAGEMENT                          -->
+      <!-- ======================================================== -->
+      <section id="section-inventory" class="page-section">
+        <div class="section-header">
+          <div class="section-header-text">
+            <h2>Inventory Management</h2>
+            <p>Staff controls for stock levels, borrow/return transactions, restocking, and catalog updates.</p>
+          </div>
+          <div class="header-actions">
+            <button class="btn btn-secondary btn-sm" onclick="App.exportInventoryJson()">💾 Export Data</button>
+            <button class="btn btn-primary btn-sm" onclick="App.openAddBookModal()">➕ Add New Book</button>
+          </div>
+        </div>
+
+        <div class="filter-bar">
+          <input type="text" id="inventorySearchInput" class="form-input" style="min-width:260px;" placeholder="Filter inventory table..." oninput="App.renderInventoryTable()">
+          <span style="font-size:12px; color:var(--text-muted);" id="inventorySummaryCount">Showing 0 books</span>
+        </div>
+
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Title & Author</th>
+                <th>Shelf</th>
+                <th>Category</th>
+                <th>Total</th>
+                <th>Available</th>
+                <th>Borrowed</th>
+                <th>Threshold</th>
+                <th>Status</th>
+                <th style="text-align:right;">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="inventoryTableBody">
+              <!-- Rendered rows -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ======================================================== -->
+      <!-- SECTION 4: AI DEMAND FORECASTING                         -->
+      <!-- ======================================================== -->
+      <section id="section-forecast" class="page-section">
+        <div class="section-header">
+          <div class="section-header-text">
+            <h2>AI Demand Forecasting & Stockout Predictor</h2>
+            <p>Local predictive algorithm based on 7-day checkout velocity, moving averages, and safety buffers.</p>
+          </div>
+          <div class="header-actions">
+            <button class="btn btn-purple btn-sm" onclick="App.openChatWithPrompt('Which books may run out this week?')">🤖 Ask AI to Explain</button>
+          </div>
+        </div>
+
+        <!-- Explanatory Banner -->
+        <div style="background: linear-gradient(90deg, #eff6ff, #f5f3ff); border: 1px solid #c7d2fe; border-radius: var(--radius-lg); padding: 18px 22px; margin-bottom: 24px;">
+          <h4 style="color:var(--primary-navy); font-size:14px; font-weight:700; margin-bottom:4px; display:flex; align-items:center; gap:8px;">
+            <span>🧠 Explainable Forecasting Engine (No Server or Cloud ML Required)</span>
+          </h4>
+          <p style="font-size:12.5px; color:#4338ca; line-height:1.5;">
+            Our algorithm inspects sample 7-day daily checkout trends:
+            <code>Daily Average = (Day 1 + ... + Day 7) / 7</code> &rarr;
+            <code>Expected 7-Day Demand = Daily Average &times; 7</code>.
+            It compares predicted demand against currently available copies. If demand exceeds stock, it marks the book as <strong>High Stockout Risk</strong> and calculates a suggested restocking quantity with a 25% safety buffer.
+          </p>
+        </div>
+
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Book Title</th>
+                <th>Available Copies</th>
+                <th>7-Day Checkout Trend</th>
+                <th>Est. 7-Day Demand</th>
+                <th>Stockout Risk</th>
+                <th>Suggested Restock</th>
+                <th style="text-align:right;">Action</th>
+              </tr>
+            </thead>
+            <tbody id="forecastTableBody">
+              <!-- Rendered forecast rows -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ======================================================== -->
+      <!-- SECTION 5: RESERVATIONS & WAITING LIST                   -->
+      <!-- ======================================================== -->
+      <section id="section-reservations" class="page-section">
+        <div class="section-header">
+          <div class="section-header-text">
+            <h2>Student Reservations & Waiting Lists</h2>
+            <p>Students can reserve available textbooks or join automated waiting lists for out-of-stock titles.</p>
+          </div>
+          <div class="header-actions">
+            <button class="btn btn-primary btn-sm" onclick="App.openCreateReservationModal()">➕ New Reservation</button>
+          </div>
+        </div>
+
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Reservation ID</th>
+                <th>Student Name</th>
+                <th>Student ID</th>
+                <th>Book Title</th>
+                <th>Type / Status</th>
+                <th>Created Date</th>
+                <th style="text-align:right;">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="reservationsTableBody">
+              <!-- Populated reservations -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ======================================================== -->
+      <!-- SECTION 6: ALERTS & REPORTS                              -->
+      <!-- ======================================================== -->
+      <section id="section-alerts" class="page-section">
+        <div class="section-header">
+          <div class="section-header-text">
+            <h2>Staff Alerts & Inventory Reports</h2>
+            <p>Consolidated notifications for low stock, zero copies, high demand spikes, and restocking summaries.</p>
+          </div>
+          <div class="header-actions">
+            <button class="btn btn-secondary btn-sm" onclick="window.print()">🖨️ Print / Save PDF</button>
+          </div>
+        </div>
+
+        <!-- Alerts Filtering -->
+        <div class="filter-bar">
+          <div class="filter-group">
+            <span class="filter-label">Filter Alerts:</span>
+            <select id="alertFilterSeverity" class="form-select" onchange="App.renderAlertsView()">
+              <option value="ALL">All Active Alerts</option>
+              <option value="URGENT">Urgent Stockouts Only</option>
+              <option value="LOW">Low Stock Warnings Only</option>
+              <option value="DEMAND">High Demand Risk Only</option>
+            </select>
+          </div>
+          <span style="font-size:12px; color:var(--text-muted);" id="alertCountBadgeText">0 alerts generated</span>
+        </div>
+
+        <div class="dashboard-card" style="margin-bottom: 24px;">
+          <div class="card-header-clean">
+            <h3>⚠️ System Inventory Alerts</h3>
+          </div>
+          <div class="card-body-clean" style="padding: 16px;">
+            <div id="fullAlertsList" style="display:flex; flex-direction:column; gap: 10px;">
+              <!-- Rendered alerts -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Inventory Summary Report Table -->
+        <div class="dashboard-card">
+          <div class="card-header-clean">
+            <h3>📑 Category Inventory Distribution Report</h3>
+            <span class="card-subtitle">Aggregate metrics by subject domain</span>
+          </div>
+          <div class="card-body-clean" style="padding: 0;">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Category</th>
+                  <th>Total Titles</th>
+                  <th>Total Copies</th>
+                  <th>Available</th>
+                  <th>Borrowed</th>
+                  <th>Stockout Titles</th>
+                  <th>Stock Health</th>
+                </tr>
+              </thead>
+              <tbody id="categoryReportTableBody">
+                <!-- Rendered category rows -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ======================================================== -->
+      <!-- SECTION 7: CAMPUSBOOK AI CHATBOT                         -->
+      <!-- ======================================================== -->
+      <section id="section-chatbot" class="page-section">
+        <div class="section-header">
+          <div class="section-header-text">
+            <h2>CampusBook AI Assistant</h2>
+            <p>Ask in natural language about textbook availability, shelf locations, low-stock warnings, and reservation assistance.</p>
+          </div>
+          <div class="header-actions">
+            <button class="btn btn-secondary btn-sm" onclick="App.clearChat()">🗑️ Clear Conversation</button>
+          </div>
+        </div>
+
+        <div class="chatbot-layout">
+          <!-- Chat Window -->
+          <div class="chat-window">
+            <div class="chat-header">
+              <div class="chat-header-info">
+                <div class="bot-avatar">🤖</div>
+                <div>
+                  <h4 style="font-size: 14.5px; font-weight: 700; color: var(--primary-navy);">CampusBook AI Assistant</h4>
+                  <span style="font-size: 11px; color: #10b981; font-weight: 600;">● Online • Rule-Based Smart Assistant</span>
+                </div>
+              </div>
+              <span style="font-size: 11px; color: var(--text-muted); background: #f1f5f9; padding: 3px 8px; border-radius: var(--radius-full);">v2.0 Local Engine</span>
+            </div>
+
+            <!-- Messages Area -->
+            <div class="chat-messages" id="chatMessages">
+              <!-- Dynamically populated bubbles -->
+            </div>
+
+            <!-- Input Area -->
+            <div class="chat-input-area">
+              <div style="margin-bottom: 8px;">
+                <span style="font-size: 11px; font-weight: 600; color: var(--text-muted);">Suggested Questions:</span>
+                <div class="chat-chip-list">
+                  <span class="chat-chip" onclick="App.sendUserPrompt('Find Python programming books.')">Find Python books</span>
+                  <span class="chat-chip" onclick="App.sendUserPrompt('Which books are out of stock?')">Which books are out of stock?</span>
+                  <span class="chat-chip" onclick="App.sendUserPrompt('Show books with low stock.')">Show low stock books</span>
+                  <span class="chat-chip" onclick="App.sendUserPrompt('Which books may run out this week?')">Run out this week?</span>
+                  <span class="chat-chip" onclick="App.sendUserPrompt('How many copies of DBMS are available?')">How many copies of DBMS?</span>
+                  <span class="chat-chip" onclick="App.sendUserPrompt('Recommend books for AI/ML students.')">Recommend AI/ML books</span>
+                  <span class="chat-chip" onclick="App.sendUserPrompt('How do I reserve a book?')">How do I reserve a book?</span>
+                </div>
+              </div>
+              <form class="chat-input-form" id="chatInputForm" onsubmit="event.preventDefault(); App.handleChatSubmit();">
+                <input type="text" id="chatInputField" placeholder="Type your book query (e.g., 'Is Operating Systems on the shelf?')..." autocomplete="off">
+                <button type="submit" class="btn btn-primary" id="chatSendBtn">Send ➔</button>
+              </form>
+            </div>
+          </div>
+
+          <!-- Assistant Capabilities Sidebar -->
+          <div class="chat-helper-panel">
+            <h3 style="font-size: 14px; font-weight: 700; color: var(--primary-navy);">Assistant Capabilities</h3>
+
+            <div class="helper-card">
+              <h4>🔍 Real-time Inventory Search</h4>
+              <p>The assistant accesses real local browser storage to report live available copies and exact shelf coordinates (e.g. "Shelf C-08").</p>
+            </div>
+
+            <div class="helper-card">
+              <h4>📈 Demand Forecasting Queries</h4>
+              <p>Ask "Which books may run out soon?" to view books where 7-day expected checkout exceeds current copies.</p>
+            </div>
+
+            <div class="helper-card">
+              <h4>🔖 Interactive Reservation</h4>
+              <p>Tell the bot "I want to reserve Python" and it will identify matching books and guide you through reserving them locally.</p>
+            </div>
+
+            <div class="helper-card" style="background:#fffbeb; border-color:#fef3c7;">
+              <h4>⚠️ Demo Prototype Notice</h4>
+              <p style="color:#92400e;">This is an explainable rule-based assistant utilizing vanilla JavaScript keyword processing without requiring paid API keys or external servers.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ======================================================== -->
+      <!-- SECTION 8: SETTINGS & LOCAL STORAGE                      -->
+      <!-- ======================================================== -->
+      <section id="section-settings" class="page-section">
+        <div class="section-header">
+          <div class="section-header-text">
+            <h2>Application Settings & Data Management</h2>
+            <p>Configure default stock thresholds, inspect browser localStorage size, and reset demo datasets.</p>
+          </div>
+        </div>
+
+        <div class="dashboard-card" style="max-width: 680px; margin-bottom: 24px;">
+          <div class="card-header-clean">
+            <h3>⚙️ Inventory Preferences</h3>
+          </div>
+          <div class="card-body-clean">
+            <div class="form-group">
+              <label class="form-label" for="settingDefaultThreshold">Global Low-Stock Warning Threshold</label>
+              <input type="number" id="settingDefaultThreshold" class="form-input" style="width: 140px;" min="1" max="20" value="3">
+              <p class="form-help">Books at or below this threshold trigger automatic warning alerts.</p>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="settingStudentName">Default Demo Student Name</label>
+              <input type="text" id="settingStudentName" class="form-input" style="max-width: 320px;" value="Alex Chen">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="settingStudentId">Default Demo Student ID</label>
+              <input type="text" id="settingStudentId" class="form-input" style="max-width: 320px;" value="STU-2026-88">
+            </div>
+            <button class="btn btn-primary btn-sm" onclick="App.saveSettings()">Save Preferences</button>
+          </div>
+        </div>
+
+        <div class="dashboard-card" style="max-width: 680px;">
+          <div class="card-header-clean">
+            <h3>💾 Local Storage & Demo Dataset Reset</h3>
+          </div>
+          <div class="card-body-clean">
+            <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px;">
+              All book records, checkout operations, reservations, and chat logs are safely stored in your browser's <code>localStorage</code>.
+            </p>
+            <div style="background:#f8fafc; padding:12px 16px; border-radius:var(--radius-md); border:1px solid #e2e8f0; margin-bottom: 16px;">
+              <div style="font-size:12px; color:var(--text-main); font-weight:600;" id="storageStatsText">Storage: calculating...</div>
+            </div>
+            <div style="display:flex; gap:10px;">
+              <button class="btn btn-danger btn-sm" onclick="App.confirmResetDemoData()">🔄 Reset Demo Data to Default</button>
+              <button class="btn btn-secondary btn-sm" onclick="App.exportInventoryJson()">💾 Export Data JSON</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+</div>
+
+<!-- ======================================================== -->
+<!-- MODAL: ADD / EDIT BOOK                                   -->
+<!-- ======================================================== -->
+<div class="modal-overlay" id="bookModal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h3 id="bookModalTitle">Add New Textbook</h3>
+      <button class="modal-close" data-close="bookModal">&times;</button>
+    </div>
+    <form id="bookForm" onsubmit="event.preventDefault(); App.handleBookFormSubmit();">
+      <div class="modal-body">
+        <input type="hidden" id="bookFormMode" value="add">
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Book ID <span class="req">*</span></label>
+            <input type="text" id="bookFormId" class="form-input" placeholder="e.g. BK-115" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">ISBN <span class="req">*</span></label>
+            <input type="text" id="bookFormIsbn" class="form-input" placeholder="978-0134092669" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Book Title <span class="req">*</span></label>
+          <input type="text" id="bookFormTitle" class="form-input" placeholder="e.g. Distributed Systems: Principles & Paradigms" required>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Author(s) <span class="req">*</span></label>
+            <input type="text" id="bookFormAuthor" class="form-input" placeholder="Andrew S. Tanenbaum" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Category <span class="req">*</span></label>
+            <input type="text" id="bookFormCategory" class="form-input" placeholder="Computer Science" required>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Edition</label>
+            <input type="text" id="bookFormEdition" class="form-input" placeholder="3rd Edition">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Shelf Location <span class="req">*</span></label>
+            <input type="text" id="bookFormShelf" class="form-input" placeholder="Shelf D-14" required>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Total Copies <span class="req">*</span></label>
+            <input type="number" id="bookFormTotalQty" class="form-input" min="1" max="500" value="10" required onchange="App.onTotalQtyChange()">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Available Copies <span class="req">*</span></label>
+            <input type="number" id="bookFormAvailQty" class="form-input" min="0" max="500" value="10" required>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Low-Stock Alert Threshold <span class="req">*</span></label>
+            <input type="number" id="bookFormThreshold" class="form-input" min="1" max="50" value="3" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Sample 7-Day Checkout Rate (Daily Avg)</label>
+            <input type="number" id="bookFormAvgDemand" class="form-input" min="0" max="50" step="0.5" value="3.0">
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-close="bookModal">Cancel</button>
+        <button type="submit" class="btn btn-primary" id="bookFormSubmitBtn">Save Book</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ======================================================== -->
+<!-- MODAL: BOOK DETAILS & QUICK ACTIONS                      -->
+<!-- ======================================================== -->
+<div class="modal-overlay" id="bookDetailModal">
+  <div class="modal-box" style="max-width: 600px;">
+    <div class="modal-header">
+      <h3 id="detailBookTitle">Book Details</h3>
+      <button class="modal-close" data-close="bookDetailModal">&times;</button>
+    </div>
+    <div class="modal-body" id="detailBookBody">
+      <!-- Populated dynamically -->
+    </div>
+    <div class="modal-footer" id="detailBookFooter">
+      <!-- Buttons dynamically injected -->
+    </div>
+  </div>
+</div>
+
+<!-- ======================================================== -->
+<!-- MODAL: RESTOCK QUANTITY                                  -->
+<!-- ======================================================== -->
+<div class="modal-overlay" id="restockModal">
+  <div class="modal-box" style="max-width: 440px;">
+    <div class="modal-header">
+      <h3>📦 Restock Physical Copies</h3>
+      <button class="modal-close" data-close="restockModal">&times;</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="restockBookId">
+      <p style="font-size: 13.5px; font-weight: 600; color: var(--primary-navy);" id="restockBookTitle">Book Title</p>
+      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 16px;" id="restockCurrentStock">Current Available: 0 | Total: 0</p>
+
+      <div class="form-group">
+        <label class="form-label">Quantity Received / Added <span class="req">*</span></label>
+        <input type="number" id="restockQuantityInput" class="form-input" min="1" max="100" value="5" required>
+        <p class="form-help">This will increase both Available Copies and Total Physical Quantity.</p>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" data-close="restockModal">Cancel</button>
+      <button type="button" class="btn btn-primary" onclick="App.executeRestock()">Confirm Restock</button>
+    </div>
+  </div>
+</div>
+
+<!-- ======================================================== -->
+<!-- MODAL: CREATE RESERVATION                                -->
+<!-- ======================================================== -->
+<div class="modal-overlay" id="reservationModal">
+  <div class="modal-box" style="max-width: 480px;">
+    <div class="modal-header">
+      <h3 id="reservationModalTitle">Reserve Textbook</h3>
+      <button class="modal-close" data-close="reservationModal">&times;</button>
+    </div>
+    <form id="reservationForm" onsubmit="event.preventDefault(); App.handleReservationSubmit();">
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">Select Book <span class="req">*</span></label>
+          <select id="reserveBookSelect" class="form-select" style="width: 100%;" required>
+            <!-- Injected dynamically -->
+          </select>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Student Name <span class="req">*</span></label>
+            <input type="text" id="reserveStudentName" class="form-input" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Student ID <span class="req">*</span></label>
+            <input type="text" id="reserveStudentId" class="form-input" required>
+          </div>
+        </div>
+
+        <div id="reservationNoticeBox" style="font-size: 12px; padding: 10px; border-radius: var(--radius-sm); margin-top: 6px;"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-close="reservationModal">Cancel</button>
+        <button type="submit" class="btn btn-primary" id="reserveSubmitBtn">Submit Reservation</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ======================================================== -->
+<!-- TOAST NOTIFICATION CONTAINER                             -->
+<!-- ======================================================== -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- ======================================================== -->
+<!-- FLOATING CHATBOT QUICK LAUNCHER BUTTON                   -->
+<!-- ======================================================== -->
+<button class="chat-floating-btn" id="floatingChatBtn" title="Open CampusBook AI Chat" onclick="App.navigate('chatbot')">
+  💬
+</button>
+
+<!-- ==========================================================================
+     JAVASCRIPT: APPLICATION LOGIC, DATA ENGINE & HEURISTIC FORECASTER
+     ========================================================================== -->
+<script>
+/**
+ * CampusBook AI — Application Controller
+ * Pure Vanilla JavaScript implementation with LocalStorage persistence,
+ * real-time availability tracking, heuristic demand forecasting, and rule-based NLP.
+ */
+
+const STORAGE_KEYS = {
+  BOOKS: 'campusbook_books_data',
+  RESERVATIONS: 'campusbook_reservations_data',
+  ACTIVITIES: 'campusbook_activity_logs',
+  NOTIFICATIONS: 'campusbook_notifications',
+  SETTINGS: 'campusbook_settings'
+};
+
+// 14 Realistic Academic Textbooks for immediate demo readiness
+const INITIAL_DEMO_BOOKS = [
+  {
+    id: 'BK-101',
+    title: 'Python Programming: An Introduction to Computer Science',
+    author: 'John Zelle',
+    isbn: '978-1590282755',
+    category: 'Computer Science',
+    edition: '3rd Edition',
+    shelf: 'Shelf A-12',
+    totalQty: 15,
+    availableQty: 3,
+    borrowedQty: 12,
+    lowStockThreshold: 4,
+    // 7-day historical checkout counts (Mon -> Sun)
+    historicalDemand: [5, 4, 6, 7, 5, 8, 6]
+  },
+  {
+    id: 'BK-102',
+    title: 'Introduction to Algorithms (CLRS)',
+    author: 'Thomas H. Cormen, Charles E. Leiserson, Ronald L. Rivest',
+    isbn: '978-0262033848',
+    category: 'Algorithms & Data Structures',
+    edition: '4th Edition',
+    shelf: 'Shelf B-04',
+    totalQty: 20,
+    availableQty: 8,
+    borrowedQty: 12,
+    lowStockThreshold: 5,
+    historicalDemand: [3, 4, 2, 5, 3, 4, 3]
+  },
+  {
+    id: 'BK-103',
+    title: 'Database System Concepts',
+    author: 'Abraham Silberschatz, Henry F. Korth, S. Sudarshan',
+    isbn: '978-0078022159',
+    category: 'Databases',
+    edition: '7th Edition',
+    shelf: 'Shelf C-08',
+    totalQty: 12,
+    availableQty: 0,
+    borrowedQty: 12,
+    lowStockThreshold: 3,
+    historicalDemand: [6, 5, 7, 8, 7, 9, 8]
+  },
+  {
+    id: 'BK-104',
+    title: 'Operating System Concepts (Dinosaur Book)',
+    author: 'Abraham Silberschatz, Peter B. Galvin, Greg Gagne',
+    isbn: '978-1119800361',
+    category: 'Operating Systems',
+    edition: '10th Edition',
+    shelf: 'Shelf C-14',
+    totalQty: 18,
+    availableQty: 2,
+    borrowedQty: 16,
+    lowStockThreshold: 4,
+    historicalDemand: [4, 5, 3, 6, 5, 7, 6]
+  },
+  {
+    id: 'BK-105',
+    title: 'Computer Networking: A Top-Down Approach',
+    author: 'James F. Kurose, Keith W. Ross',
+    isbn: '978-0136681557',
+    category: 'Computer Networks',
+    edition: '8th Edition',
+    shelf: 'Shelf D-02',
+    totalQty: 14,
+    availableQty: 6,
+    borrowedQty: 8,
+    lowStockThreshold: 3,
+    historicalDemand: [2, 3, 2, 4, 3, 2, 3]
+  },
+  {
+    id: 'BK-106',
+    title: 'Artificial Intelligence: A Modern Approach',
+    author: 'Stuart Russell, Peter Norvig',
+    isbn: '978-0134610993',
+    category: 'Artificial Intelligence',
+    edition: '4th Edition',
+    shelf: 'Shelf E-01',
+    totalQty: 22,
+    availableQty: 1,
+    borrowedQty: 21,
+    lowStockThreshold: 5,
+    historicalDemand: [8, 9, 7, 10, 8, 9, 11]
+  },
+  {
+    id: 'BK-107',
+    title: 'Pattern Recognition and Machine Learning',
+    author: 'Christopher M. Bishop',
+    isbn: '978-0387310732',
+    category: 'Machine Learning',
+    edition: '1st Edition',
+    shelf: 'Shelf E-06',
+    totalQty: 10,
+    availableQty: 0,
+    borrowedQty: 10,
+    lowStockThreshold: 3,
+    historicalDemand: [4, 6, 5, 7, 6, 8, 7]
+  },
+  {
+    id: 'BK-108',
+    title: 'Deep Learning',
+    author: 'Ian Goodfellow, Yoshua Bengio, Aaron Courville',
+    isbn: '978-0262035613',
+    category: 'Artificial Intelligence',
+    edition: '1st Edition',
+    shelf: 'Shelf E-10',
+    totalQty: 16,
+    availableQty: 7,
+    borrowedQty: 9,
+    lowStockThreshold: 4,
+    historicalDemand: [3, 4, 3, 5, 4, 4, 5]
+  },
+  {
+    id: 'BK-109',
+    title: 'Web Development and Design Foundations with HTML5',
+    author: 'Terry Felke-Morris',
+    isbn: '978-0134801148',
+    category: 'Web Development',
+    edition: '9th Edition',
+    shelf: 'Shelf F-03',
+    totalQty: 15,
+    availableQty: 11,
+    borrowedQty: 4,
+    lowStockThreshold: 3,
+    historicalDemand: [1, 2, 2, 1, 3, 2, 2]
+  },
+  {
+    id: 'BK-110',
+    title: 'Effective Java',
+    author: 'Joshua Bloch',
+    isbn: '978-0134685991',
+    category: 'Programming Languages',
+    edition: '3rd Edition',
+    shelf: 'Shelf A-05',
+    totalQty: 12,
+    availableQty: 5,
+    borrowedQty: 7,
+    lowStockThreshold: 3,
+    historicalDemand: [2, 3, 3, 4, 2, 3, 4]
+  },
+  {
+    id: 'BK-111',
+    title: 'Mathematics for Computer Science',
+    author: 'Eric Lehman, F Thomson Leighton, Albert R Meyer',
+    isbn: '978-1329244030',
+    category: 'Mathematics',
+    edition: '2nd Edition',
+    shelf: 'Shelf M-01',
+    totalQty: 10,
+    availableQty: 1,
+    borrowedQty: 9,
+    lowStockThreshold: 2,
+    historicalDemand: [3, 4, 2, 5, 4, 3, 4]
+  },
+  {
+    id: 'BK-112',
+    title: 'Software Engineering: A Practitioner\'s Approach',
+    author: 'Roger S. Pressman, Bruce Maxim',
+    isbn: '978-1259872976',
+    category: 'Software Engineering',
+    edition: '9th Edition',
+    shelf: 'Shelf S-07',
+    totalQty: 14,
+    availableQty: 9,
+    borrowedQty: 5,
+    lowStockThreshold: 4,
+    historicalDemand: [2, 1, 3, 2, 2, 3, 2]
+  },
+  {
+    id: 'BK-113',
+    title: 'Designing Data-Intensive Applications',
+    author: 'Martin Kleppmann',
+    isbn: '978-1449373320',
+    category: 'Databases',
+    edition: '1st Edition',
+    shelf: 'Shelf C-20',
+    totalQty: 25,
+    availableQty: 4,
+    borrowedQty: 21,
+    lowStockThreshold: 6,
+    historicalDemand: [7, 8, 6, 9, 8, 10, 9]
+  },
+  {
+    id: 'BK-114',
+    title: 'Computer Systems: A Programmer\'s Perspective (CS:APP)',
+    author: 'Randal E. Bryant, David R. O\'Hallaron',
+    isbn: '978-0134092669',
+    category: 'Computer Science',
+    edition: '3rd Edition',
+    shelf: 'Shelf B-11',
+    totalQty: 18,
+    availableQty: 12,
+    borrowedQty: 6,
+    lowStockThreshold: 4,
+    historicalDemand: [2, 3, 3, 2, 4, 3, 2]
+  }
+];
+
+const INITIAL_RESERVATIONS = [
+  {
+    id: 'RSV-801',
+    bookId: 'BK-103',
+    studentName: 'Alex Chen',
+    studentId: 'STU-2026-88',
+    status: 'WAITLISTED', // WAITLISTED or RESERVED
+    date: '2026-10-14 14:30'
+  },
+  {
+    id: 'RSV-802',
+    bookId: 'BK-107',
+    studentName: 'Priya Sharma',
+    studentId: 'STU-2026-42',
+    status: 'WAITLISTED',
+    date: '2026-10-15 09:15'
+  }
+];
+
+const INITIAL_ACTIVITIES = [
+  { id: 1, type: 'borrow', text: 'Student STU-2026-42 borrowed "Database System Concepts"', time: '10 mins ago' },
+  { id: 2, type: 'alert', text: 'Automated alert: "Database System Concepts" is now Out of Stock!', time: '10 mins ago' },
+  { id: 3, type: 'restock', text: 'Desk staff restocked 4 copies of "Deep Learning"', time: '1 hour ago' },
+  { id: 4, type: 'reserve', text: 'Alex Chen joined waitlist for "Database System Concepts"', time: 'Yesterday' }
+];
+
+// App Controller Object
+const App = {
+  books: [],
+  reservations: [],
+  activities: [],
+  notifications: [],
+  settings: {
+    defaultThreshold: 3,
+    studentName: 'Alex Chen',
+    studentId: 'STU-2026-88'
+  },
+  currentSection: 'dashboard',
+
+  // =========================================================================
+  // INITIALIZATION & LOCALSTORAGE MANAGEMENT
+  // =========================================================================
+  init() {
+    this.loadState();
+    this.bindEvents();
+    this.renderAll();
+    this.initChatWelcome();
+    this.updateNotificationBadge();
+  },
+
+  loadState() {
+    try {
+      const storedBooks = localStorage.getItem(STORAGE_KEYS.BOOKS);
+      this.books = storedBooks ? JSON.parse(storedBooks) : JSON.parse(JSON.stringify(INITIAL_DEMO_BOOKS));
+
+      const storedReservations = localStorage.getItem(STORAGE_KEYS.RESERVATIONS);
+      this.reservations = storedReservations ? JSON.parse(storedReservations) : JSON.parse(JSON.stringify(INITIAL_RESERVATIONS));
+
+      const storedActivities = localStorage.getItem(STORAGE_KEYS.ACTIVITIES);
+      this.activities = storedActivities ? JSON.parse(storedActivities) : JSON.parse(JSON.stringify(INITIAL_ACTIVITIES));
+
+      const storedNotifications = localStorage.getItem(STORAGE_KEYS.NOTIFICATIONS);
+      this.notifications = storedNotifications ? JSON.parse(storedNotifications) : [
+        {
+          id: 1,
+          text: 'Welcome to CampusBook AI! The automated book availability tracker is running.',
+          date: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          read: false
+        }
+      ];
+
+      const storedSettings = localStorage.getItem(STORAGE_KEYS.SETTINGS);
+      if (storedSettings) {
+        this.settings = Object.assign(this.settings, JSON.parse(storedSettings));
+      }
+
+      this.saveState();
+    } catch (e) {
+      console.error('Error loading data from localStorage, falling back to default:', e);
+      this.books = JSON.parse(JSON.stringify(INITIAL_DEMO_BOOKS));
+      this.reservations = JSON.parse(JSON.stringify(INITIAL_RESERVATIONS));
+      this.activities = JSON.parse(JSON.stringify(INITIAL_ACTIVITIES));
+      this.notifications = [];
+      this.saveState();
+    }
+  },
+
+  saveState() {
+    try {
+      localStorage.setItem(STORAGE_KEYS.BOOKS, JSON.stringify(this.books));
+      localStorage.setItem(STORAGE_KEYS.RESERVATIONS, JSON.stringify(this.reservations));
+      localStorage.setItem(STORAGE_KEYS.ACTIVITIES, JSON.stringify(this.activities));
+      localStorage.setItem(STORAGE_KEYS.NOTIFICATIONS, JSON.stringify(this.notifications));
+      localStorage.setItem(STORAGE_KEYS.SETTINGS, JSON.stringify(this.settings));
+    } catch (err) {
+      console.warn('LocalStorage save failed:', err);
+    }
+  },
+
+  logActivity(type, text) {
+    const item = {
+      id: Date.now(),
+      type: type,
+      text: text,
+      time: 'Just now'
+    };
+    this.activities.unshift(item);
+    if (this.activities.length > 30) this.activities.pop();
+    this.saveState();
+    this.renderDashboardActivities();
+  },
+
+  addInAppNotification(text) {
+    const notif = {
+      id: Date.now(),
+      text: text,
+      date: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      read: false
+    };
+    this.notifications.unshift(notif);
+    this.saveState();
+    this.updateNotificationBadge();
+    this.showToast(text, 'success');
+  },
+
+  updateNotificationBadge() {
+    const unread = this.notifications.filter(n => !n.read).length;
+    const badge = document.getElementById('bellBadge');
+    if (badge) {
+      badge.textContent = unread;
+      badge.style.display = unread > 0 ? 'inline-block' : 'none';
+    }
+  },
+
+  // =========================================================================
+  // DEMAND FORECASTING HEURISTIC ALGORITHM
+  // Beginner-friendly, explainable moving-average demand model
+  // =========================================================================
+  calculateDemandForecast(book) {
+    const history = book.historicalDemand || [2, 2, 3, 2, 3, 2, 3];
+    const sum = history.reduce((acc, val) => acc + val, 0);
+    const dailyAvg = sum / history.length;
+    
+    // Estimate demand for the upcoming 7 days
+    const expected7DayDemand = Math.round(dailyAvg * 7);
+
+    // Calculate stockout risk
+    // Risk is High if expected demand strictly exceeds currently available copies, or if already 0
+    let risk = 'Low';
+    let riskClass = 'safe';
+
+    if (book.availableQty === 0) {
+      risk = 'Critical (Out of Stock)';
+      riskClass = 'risk';
+    } else if (expected7DayDemand > book.availableQty) {
+      risk = 'High Stockout Risk';
+      riskClass = 'risk';
+    } else if ((book.availableQty - expected7DayDemand) <= book.lowStockThreshold) {
+      risk = 'Medium Risk';
+      riskClass = 'medium';
+    } else {
+      risk = 'Low Risk (Healthy)';
+      riskClass = 'safe';
+    }
+
+    // Recommended restocking quantity calculation:
+    // Need enough to cover 7-day demand + safety buffer (e.g. 25% extra or threshold)
+    const safetyBuffer = Math.ceil(book.lowStockThreshold * 1.25);
+    const targetStock = expected7DayDemand + safetyBuffer;
+    const suggestedRestock = Math.max(0, targetStock - book.availableQty);
+
+    return {
+      dailyAvg: dailyAvg.toFixed(1),
+      expected7DayDemand,
+      risk,
+      riskClass,
+      suggestedRestock,
+      history
+    };
+  },
+
+  // =========================================================================
+  // NAVIGATION & VIEW SWITCHING
+  // =========================================================================
+  navigate(targetSection) {
+    this.currentSection = targetSection;
+
+    // Toggle nav items
+    document.querySelectorAll('.sidebar-nav .nav-item').forEach(el => {
+      if (el.getAttribute('data-target') === targetSection) {
+        el.classList.add('active');
+      } else {
+        el.classList.remove('active');
+      }
+    });
+
+    // Toggle pages
+    document.querySelectorAll('.page-section').forEach(sec => {
+      sec.classList.remove('active');
+    });
+
+    const activeSec = document.getElementById('section-' + targetSection);
+    if (activeSec) {
+      activeSec.classList.add('active');
+    }
+
+    // Update Topbar Title
+    const titles = {
+      dashboard: 'Dashboard Overview',
+      catalogue: 'Book Search & Availability Tracker',
+      inventory: 'Inventory & Stock Management',
+      forecast: 'AI Demand Forecasting & Heuristics',
+      reservations: 'Student Reservations & Waiting Lists',
+      alerts: 'Staff Low-Stock Alerts & Reports',
+      chatbot: 'CampusBook AI Assistant',
+      settings: 'System Preferences & Storage'
+    };
+    const titleEl = document.getElementById('currentSectionTitle');
+    if (titleEl) {
+      titleEl.innerHTML = `<span>${titles[targetSection] || 'CampusBook AI'}</span>`;
+    }
+
+    // Close mobile sidebar if open
+    document.getElementById('appSidebar').classList.remove('open');
+
+    // Trigger section-specific refresh
+    this.renderSection(targetSection);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  },
+
+  renderSection(section) {
+    switch (section) {
+      case 'dashboard':
+        this.renderDashboard();
+        break;
+      case 'catalogue':
+        this.renderCatalogue();
+        break;
+      case 'inventory':
+        this.renderInventoryTable();
+        break;
+      case 'forecast':
+        this.renderForecastTable();
+        break;
+      case 'reservations':
+        this.renderReservationsTable();
+        break;
+      case 'alerts':
+        this.renderAlertsView();
+        break;
+      case 'settings':
+        this.renderSettingsView();
+        break;
+    }
+  },
+
+  renderAll() {
+    this.renderDashboard();
+    this.populateCategoryFilters();
+    this.renderCatalogue();
+    this.renderInventoryTable();
+    this.renderForecastTable();
+    this.renderReservationsTable();
+    this.renderAlertsView();
+    this.updateNotificationBadge();
+  },
+
+  // =========================================================================
+  // DASHBOARD RENDERING
+  // =========================================================================
+  renderDashboard() {
+    const totalBooks = this.books.length;
+    const totalCopies = this.books.reduce((acc, b) => acc + Number(b.totalQty), 0);
+    const availableCopies = this.books.reduce((acc, b) => acc + Number(b.availableQty), 0);
+    const borrowedCopies = this.books.reduce((acc, b) => acc + Number(b.borrowedQty), 0);
+    const outOfStock = this.books.filter(b => Number(b.availableQty) === 0).length;
+    const lowStock = this.books.filter(b => Number(b.availableQty) > 0 && Number(b.availableQty) <= Number(b.lowStockThreshold)).length;
+    const pendingReservations = this.reservations.filter(r => r.status === 'WAITLISTED' || r.status === 'RESERVED').length;
+    
+    // High demand books where projected demand exceeds available copies
+    const highDemand = this.books.filter(b => {
+      const f = this.calculateDemandForecast(b);
+      return f.riskClass === 'risk';
+    }).length;
+
+    // Update KPI Elements
+    document.getElementById('kpiUniqueBooks').textContent = totalBooks;
+    document.getElementById('kpiTotalCopies').textContent = totalCopies;
+    document.getElementById('kpiAvailableCopies').textContent = availableCopies;
+    document.getElementById('kpiBorrowedCopies').textContent = borrowedCopies;
+    document.getElementById('kpiOutOfStock').textContent = outOfStock;
+    document.getElementById('kpiLowStock').textContent = lowStock;
+    document.getElementById('kpiReservations').textContent = pendingReservations;
+    document.getElementById('kpiHighDemand').textContent = highDemand;
+
+    const availPercent = totalCopies > 0 ? Math.round((availableCopies / totalCopies) * 100) : 0;
+    const borrowPercent = totalCopies > 0 ? Math.round((borrowedCopies / totalCopies) * 100) : 0;
+    document.getElementById('kpiAvailablePercent').textContent = availPercent + '%';
+    document.getElementById('kpiBorrowedPercent').textContent = borrowPercent + '% active loans';
+
+    // Update Sidebar Badges
+    const navAlert = document.getElementById('navAlertCount');
+    if (navAlert) {
+      const totalAlerts = outOfStock + lowStock;
+      navAlert.textContent = totalAlerts;
+      navAlert.style.display = totalAlerts > 0 ? 'inline-block' : 'none';
+    }
+
+    const navRes = document.getElementById('navReservationCount');
+    if (navRes) {
+      navRes.textContent = pendingReservations;
+      navRes.style.display = pendingReservations > 0 ? 'inline-block' : 'none';
+    }
+
+    // Render pure CSS demand forecast chart on dashboard
+    this.renderDashboardDemandChart();
+    this.renderDashboardAlertList();
+    this.renderDashboardActivities();
+  },
+
+  renderDashboardDemandChart() {
+    const container = document.getElementById('dashboardDemandChart');
+    if (!container) return;
+
+    // Pick top 5 books sorted by highest 7-day expected demand
+    const sorted = [...this.books].map(b => {
+      const forecast = this.calculateDemandForecast(b);
+      return { book: b, forecast };
+    }).sort((a, b) => b.forecast.expected7DayDemand - a.forecast.expected7DayDemand).slice(0, 5);
+
+    let html = '';
+    sorted.forEach(item => {
+      const { book, forecast } = item;
+      const maxVal = Math.max(book.availableQty, forecast.expected7DayDemand, 12);
+      const availWidth = Math.min(100, Math.round((book.availableQty / maxVal) * 100));
+      const demandWidth = Math.min(100, Math.round((forecast.expected7DayDemand / maxVal) * 100));
+
+      html += `
+        <div class="chart-item">
+          <div class="chart-label-row">
+            <div>
+              <span>${this.escapeHtml(book.title)}</span>
+              <span class="chart-title-sub">(${book.category} • ${book.shelf})</span>
+            </div>
+            <div>
+              <span style="font-weight:700; color:${forecast.riskClass === 'risk' ? '#ef4444' : '#2563eb'}">
+                Stock: ${book.availableQty} / Demand: ${forecast.expected7DayDemand}
+              </span>
+            </div>
+          </div>
+          <div class="chart-bar-track" title="Available: ${book.availableQty} copies | Expected: ${forecast.expected7DayDemand} requests">
+            <div class="chart-bar-fill ${forecast.riskClass}" style="width: ${Math.max(6, demandWidth)}%;"></div>
+          </div>
+        </div>
+      `;
+    });
+
+    container.innerHTML = html;
+  },
+
+  renderDashboardAlertList() {
+    const list = document.getElementById('dashboardAlertList');
+    if (!list) return;
+
+    // Filter books with 0 copies or <= threshold
+    const urgent = this.books.filter(b => b.availableQty === 0);
+    const low = this.books.filter(b => b.availableQty > 0 && b.availableQty <= b.lowStockThreshold);
+
+    if (urgent.length === 0 && low.length === 0) {
+      list.innerHTML = `<div style="font-size:12px; color:var(--text-muted); padding:8px 0;">✅ All stock levels healthy. No urgent alerts.</div>`;
+      return;
+    }
+
+    let html = '';
+    // Show urgent first
+    urgent.slice(0, 3).forEach(b => {
+      html += `
+        <div style="display:flex; align-items:center; justify-content:space-between; background:#fef2f2; border:1px solid #fecaca; border-radius:var(--radius-md); padding:8px 12px; font-size:12px;">
+          <div>
+            <strong style="color:#991b1b;">🚫 OUT OF STOCK</strong>: ${this.escapeHtml(b.title)}
+            <div style="font-size:11px; color:#b91c1c;">0 copies available at ${b.shelf}</div>
+          </div>
+          <button class="btn btn-secondary btn-sm" style="padding:3px 8px;" onclick="App.openRestockModal('${b.id}')">Restock</button>
+        </div>
+      `;
+    });
+
+    low.slice(0, 3).forEach(b => {
+      html += `
+        <div style="display:flex; align-items:center; justify-content:space-between; background:#fffbeb; border:1px solid #fde68a; border-radius:var(--radius-md); padding:8px 12px; font-size:12px;">
+          <div>
+            <strong style="color:#92400e;">⚠️ LOW STOCK</strong>: ${this.escapeHtml(b.title)}
+            <div style="font-size:11px; color:#b45309;">Only ${b.availableQty} copies left (Threshold: ${b.lowStockThreshold})</div>
+          </div>
+          <button class="btn btn-secondary btn-sm" style="padding:3px 8px;" onclick="App.openRestockModal('${b.id}')">Restock</button>
+        </div>
+      `;
+    });
+
+    list.innerHTML = html;
+  },
+
+  renderDashboardActivities() {
+    const feed = document.getElementById('dashboardActivityFeed');
+    if (!feed) return;
+
+    if (this.activities.length === 0) {
+      feed.innerHTML = `<div style="font-size:12px; color:var(--text-muted); text-align:center;">No recent activity recorded.</div>`;
+      return;
+    }
+
+    let html = '';
+    this.activities.slice(0, 5).forEach(act => {
+      let icon = '📝';
+      let iconBg = '#eff6ff';
+      let iconColor = '#2563eb';
+
+      if (act.type === 'borrow') { icon = '📤'; iconBg = '#fef2f2'; iconColor = '#ef4444'; }
+      else if (act.type === 'return') { icon = '📥'; iconBg = '#ecfdf5'; iconColor = '#059669'; }
+      else if (act.type === 'restock') { icon = '📦'; iconBg = '#f5f3ff'; iconColor = '#7c3aed'; }
+      else if (act.type === 'alert') { icon = '⚠️'; iconBg = '#fffbeb'; iconColor = '#d97706'; }
+      else if (act.type === 'reserve') { icon = '🔖'; iconBg = '#e0f2fe'; iconColor = '#0284c7'; }
+
+      html += `
+        <div class="activity-item">
+          <div class="activity-icon" style="background:${iconBg}; color:${iconColor};">${icon}</div>
+          <div class="activity-body">
+            <div class="activity-text">${this.escapeHtml(act.text)}</div>
+            <div class="activity-time">${act.time}</div>
+          </div>
+        </div>
+      `;
+    });
+
+    feed.innerHTML = html;
+  },
+
+  // =========================================================================
+  // BOOK SEARCH & CATALOGUE
+  // =========================================================================
+  populateCategoryFilters() {
+    const select = document.getElementById('catalogueCategoryFilter');
+    if (!select) return;
+
+    const categories = Array.from(new Set(this.books.map(b => b.category))).sort();
+    let options = '<option value="ALL">All Categories</option>';
+    categories.forEach(cat => {
+      options += `<option value="${this.escapeHtml(cat)}">${this.escapeHtml(cat)}</option>`;
+    });
+    select.innerHTML = options;
+  },
+
+  applyFilters() {
+    this.renderCatalogue();
+  },
+
+  resetCatalogueFilters() {
+    document.getElementById('catalogueSearchInput').value = '';
+    document.getElementById('catalogueCategoryFilter').value = 'ALL';
+    document.getElementById('catalogueStatusFilter').value = 'ALL';
+    document.getElementById('catalogueSort').value = 'title_asc';
+    this.renderCatalogue();
+  },
+
+  renderCatalogue() {
+    const grid = document.getElementById('catalogueGrid');
+    const emptyState = document.getElementById('catalogueEmptyState');
+    if (!grid) return;
+
+    const query = (document.getElementById('catalogueSearchInput')?.value || '').trim().toLowerCase();
+    const category = document.getElementById('catalogueCategoryFilter')?.value || 'ALL';
+    const status = document.getElementById('catalogueStatusFilter')?.value || 'ALL';
+    const sort = document.getElementById('catalogueSort')?.value || 'title_asc';
+
+    let filtered = this.books.filter(b => {
+      const forecast = this.calculateDemandForecast(b);
+
+      // Search match
+      const matchesSearch = !query ||
+        b.title.toLowerCase().includes(query) ||
+        b.author.toLowerCase().includes(query) ||
+        b.isbn.toLowerCase().includes(query) ||
+        b.id.toLowerCase().includes(query) ||
+        b.category.toLowerCase().includes(query);
+
+      // Category match
+      const matchesCat = category === 'ALL' || b.category === category;
+
+      // Status match
+      let matchesStatus = true;
+      if (status === 'AVAILABLE') {
+        matchesStatus = b.availableQty > 0;
+      } else if (status === 'LOW_STOCK') {
+        matchesStatus = b.availableQty > 0 && b.availableQty <= b.lowStockThreshold;
+      } else if (status === 'OUT_OF_STOCK') {
+        matchesStatus = b.availableQty === 0;
+      } else if (status === 'HIGH_DEMAND') {
+        matchesStatus = forecast.riskClass === 'risk';
+      }
+
+      return matchesSearch && matchesCat && matchesStatus;
+    });
+
+    // Sorting
+    filtered.sort((a, b) => {
+      if (sort === 'title_asc') return a.title.localeCompare(b.title);
+      if (sort === 'available_desc') return b.availableQty - a.availableQty;
+      if (sort === 'available_asc') return a.availableQty - b.availableQty;
+      if (sort === 'demand_desc') {
+        return this.calculateDemandForecast(b).expected7DayDemand - this.calculateDemandForecast(a).expected7DayDemand;
+      }
+      return 0;
+    });
+
+    if (filtered.length === 0) {
+      grid.innerHTML = '';
+      emptyState.style.display = 'block';
+      return;
+    }
+
+    emptyState.style.display = 'none';
+    let html = '';
+
+    filtered.forEach(book => {
+      const forecast = this.calculateDemandForecast(book);
+      const isOut = book.availableQty === 0;
+      const isLow = book.availableQty > 0 && book.availableQty <= book.lowStockThreshold;
+
+      // Status Badge
+      let badgeHtml = '';
+      if (isOut) {
+        badgeHtml = `<span class="badge badge-out">🚫 Out of Stock</span>`;
+      } else if (isLow) {
+        badgeHtml = `<span class="badge badge-low">⚠️ Low Stock (${book.availableQty} left)</span>`;
+      } else {
+        badgeHtml = `<span class="badge badge-available">✅ Available (${book.availableQty} copies)</span>`;
+      }
+
+      if (forecast.riskClass === 'risk') {
+        badgeHtml += ` <span class="badge badge-high" title="Predicted 7-day demand: ${forecast.expected7DayDemand}">🔥 High Demand</span>`;
+      }
+
+      // Percentage bar
+      const fillPct = book.totalQty > 0 ? Math.round((book.availableQty / book.totalQty) * 100) : 0;
+      let barColor = '#10b981';
+      if (isOut) barColor = '#ef4444';
+      else if (isLow) barColor = '#f59e0b';
+
+      html += `
+        <div class="book-card">
+          <div class="book-card-header">
+            <div class="book-category">${this.escapeHtml(book.category)}</div>
+            <div class="book-title" title="${this.escapeHtml(book.title)}">${this.escapeHtml(book.title)}</div>
+            <div class="book-author">by ${this.escapeHtml(book.author)}</div>
+          </div>
+          <div class="book-card-body">
+            <div style="display:flex; flex-wrap:wrap; gap:4px; margin-bottom:4px;">
+              ${badgeHtml}
+            </div>
+
+            <div class="book-meta-grid">
+              <div class="book-meta-item">
+                <span>Location</span>
+                <strong>📍 ${this.escapeHtml(book.shelf)}</strong>
+              </div>
+              <div class="book-meta-item">
+                <span>Book ID</span>
+                <strong>${this.escapeHtml(book.id)}</strong>
+              </div>
+              <div class="book-meta-item">
+                <span>Total Copies</span>
+                <strong>${book.totalQty}</strong>
+              </div>
+              <div class="book-meta-item">
+                <span>7-Day Demand</span>
+                <strong>~${forecast.expected7DayDemand} reqs</strong>
+              </div>
+            </div>
+
+            <div class="stock-indicator-wrap">
+              <div class="stock-indicator-header">
+                <span style="color:var(--text-muted);">Physical Availability</span>
+                <span>${book.availableQty} / ${book.totalQty}</span>
+              </div>
+              <div class="stock-bar-track">
+                <div class="stock-bar-fill" style="width:${fillPct}%; background-color:${barColor};"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="book-card-footer">
+            <button class="btn btn-secondary btn-sm" style="flex:1;" onclick="App.openBookDetailModal('${book.id}')">Details</button>
+            ${isOut ? `
+              <button class="btn btn-purple btn-sm" style="flex:1;" onclick="App.openCreateReservationModal('${book.id}')">Join Waitlist</button>
+            ` : `
+              <button class="btn btn-primary btn-sm" style="flex:1;" onclick="App.borrowBook('${book.id}')">Borrow Copy</button>
+            `}
+          </div>
+        </div>
+      `;
+    });
+
+    grid.innerHTML = html;
+  },
+
+  // =========================================================================
+  // INVENTORY MANAGEMENT (STAFF CRUD & TRANSACTIONS)
+  // =========================================================================
+  renderInventoryTable() {
+    const tbody = document.getElementById('inventoryTableBody');
+    const summary = document.getElementById('inventorySummaryCount');
+    if (!tbody) return;
+
+    const query = (document.getElementById('inventorySearchInput')?.value || '').trim().toLowerCase();
+
+    const filtered = this.books.filter(b => {
+      return !query ||
+        b.title.toLowerCase().includes(query) ||
+        b.author.toLowerCase().includes(query) ||
+        b.id.toLowerCase().includes(query) ||
+        b.shelf.toLowerCase().includes(query) ||
+        b.category.toLowerCase().includes(query);
+    });
+
+    if (summary) {
+      summary.textContent = `Showing ${filtered.length} of ${this.books.length} titles`;
+    }
+
+    if (filtered.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="10" style="text-align:center; padding:24px; color:var(--text-muted);">No matching inventory records found.</td></tr>`;
+      return;
+    }
+
+    let html = '';
+    filtered.forEach(book => {
+      const isOut = book.availableQty === 0;
+      const isLow = book.availableQty > 0 && book.availableQty <= book.lowStockThreshold;
+
+      let badge = `<span class="badge badge-available">Available</span>`;
+      if (isOut) badge = `<span class="badge badge-out">Out of Stock</span>`;
+      else if (isLow) badge = `<span class="badge badge-low">Low Stock</span>`;
+
+      html += `
+        <tr>
+          <td><code style="font-weight:700;">${this.escapeHtml(book.id)}</code></td>
+          <td>
+            <div style="font-weight:600; color:var(--primary-navy);">${this.escapeHtml(book.title)}</div>
+            <div style="font-size:11.5px; color:var(--text-muted);">${this.escapeHtml(book.author)} • ISBN: ${book.isbn}</div>
+          </td>
+          <td><span style="font-weight:600;">${this.escapeHtml(book.shelf)}</span></td>
+          <td><span class="badge badge-neutral">${this.escapeHtml(book.category)}</span></td>
+          <td><strong>${book.totalQty}</strong></td>
+          <td><strong style="color:${isOut ? '#dc2626' : (isLow ? '#d97706' : '#059669')}">${book.availableQty}</strong></td>
+          <td>${book.borrowedQty}</td>
+          <td>${book.lowStockThreshold}</td>
+          <td>${badge}</td>
+          <td style="text-align:right; white-space:nowrap;">
+            <button class="btn btn-secondary btn-sm" title="Borrow 1 Copy" onclick="App.borrowBook('${book.id}')" ${isOut ? 'disabled' : ''}>📤</button>
+            <button class="btn btn-secondary btn-sm" title="Return 1 Copy" onclick="App.returnBook('${book.id}')" ${book.borrowedQty === 0 ? 'disabled' : ''}>📥</button>
+            <button class="btn btn-secondary btn-sm" title="Restock" onclick="App.openRestockModal('${book.id}')">📦</button>
+            <button class="btn btn-secondary btn-sm" title="Edit Details" onclick="App.openEditBookModal('${book.id}')">✏️</button>
+            <button class="btn btn-secondary btn-sm" style="color:#ef4444;" title="Delete" onclick="App.confirmDeleteBook('${book.id}')">🗑️</button>
+          </td>
+        </tr>
+      `;
+    });
+
+    tbody.innerHTML = html;
+  },
+
+  // Borrow Transaction Automation
+  borrowBook(bookId) {
+    const book = this.books.find(b => b.id === bookId);
+    if (!book) return;
+
+    if (book.availableQty <= 0) {
+      this.showToast(`Cannot borrow "${book.title}". Zero copies currently available.`, 'danger');
+      return;
+    }
+
+    book.availableQty -= 1;
+    book.borrowedQty += 1;
+    this.saveState();
+
+    this.logActivity('borrow', `1 copy of "${book.title}" borrowed. (Available left: ${book.availableQty})`);
+    this.showToast(`Borrowed 1 copy of "${book.title}".`, 'success');
+
+    // Trigger low stock warning automatically if threshold breached
+    if (book.availableQty === 0) {
+      this.logActivity('alert', `Urgent: "${book.title}" is now completely Out of Stock!`);
+      this.addInAppNotification(`Urgent Alert: "${book.title}" has run out of physical stock!`);
+    } else if (book.availableQty <= book.lowStockThreshold) {
+      this.logActivity('alert', `Low-Stock warning for "${book.title}": ${book.availableQty} copies remaining.`);
+    }
+
+    this.renderAll();
+  },
+
+  // Return Transaction Automation + Waiting List Notification Engine
+  returnBook(bookId) {
+    const book = this.books.find(b => b.id === bookId);
+    if (!book) return;
+
+    if (book.borrowedQty <= 0) {
+      this.showToast(`Cannot return. No copies of "${book.title}" are registered as borrowed.`, 'warning');
+      return;
+    }
+
+    book.borrowedQty -= 1;
+    book.availableQty += 1;
+    this.saveState();
+
+    this.logActivity('return', `1 copy of "${book.title}" returned to shelf ${book.shelf}.`);
+    this.showToast(`Returned copy of "${book.title}". Available copies: ${book.availableQty}`, 'success');
+
+    // Automation Check: Check if there is an active waiting list student for this book!
+    this.checkWaitlistFulfillment(book);
+
+    this.renderAll();
+  },
+
+  // Automated Waiting List check when copy becomes available
+  checkWaitlistFulfillment(book) {
+    const waitingReservation = this.reservations.find(r => r.bookId === book.id && r.status === 'WAITLISTED');
+    if (waitingReservation && book.availableQty > 0) {
+      // Auto-assign reservation to student
+      waitingReservation.status = 'READY_FOR_PICKUP';
+      book.availableQty -= 1; // Held for student
+      this.saveState();
+
+      const msg = `🎉 Great news for ${waitingReservation.studentName}! A copy of "${book.title}" is now available at ${book.shelf} (Hold ID: ${waitingReservation.id}).`;
+      this.addInAppNotification(msg);
+      this.logActivity('reserve', `Waitlist fulfilled: copy of "${book.title}" held for ${waitingReservation.studentName}.`);
+    }
+  },
+
+  // Restock Physical Copies
+  openRestockModal(bookId) {
+    const book = this.books.find(b => b.id === bookId);
+    if (!book) return;
+
+    document.getElementById('restockBookId').value = book.id;
+    document.getElementById('restockBookTitle').textContent = book.title;
+    document.getElementById('restockCurrentStock').textContent = `Current Stock: ${book.availableQty} available out of ${book.totalQty} total physical copies.`;
+    document.getElementById('restockQuantityInput').value = '5';
+
+    this.openModal('restockModal');
+  },
+
+  executeRestock() {
+    const bookId = document.getElementById('restockBookId').value;
+    const qty = parseInt(document.getElementById('restockQuantityInput').value, 10);
+
+    if (isNaN(qty) || qty <= 0) {
+      alert('Please enter a valid positive quantity to restock.');
+      return;
+    }
+
+    const book = this.books.find(b => b.id === bookId);
+    if (!book) return;
+
+    book.totalQty += qty;
+    book.availableQty += qty;
+    this.saveState();
+
+    this.closeModal('restockModal');
+    this.logActivity('restock', `Restocked ${qty} physical copies of "${book.title}". (New available: ${book.availableQty})`);
+    this.showToast(`Restocked ${qty} copies of "${book.title}".`, 'success');
+
+    // Check if waiting list students can now receive copies
+    this.checkWaitlistFulfillment(book);
+
+    this.renderAll();
+  },
+
+  // Add / Edit Book Modal Operations
+  openAddBookModal() {
+    document.getElementById('bookModalTitle').textContent = 'Add New Academic Textbook';
+    document.getElementById('bookFormMode').value = 'add';
+    document.getElementById('bookFormId').value = 'BK-' + (Math.floor(100 + Math.random() * 900));
+    document.getElementById('bookFormId').readOnly = false;
+    document.getElementById('bookFormTitle').value = '';
+    document.getElementById('bookFormAuthor').value = '';
+    document.getElementById('bookFormIsbn').value = '978-' + Math.floor(1000000000 + Math.random() * 9000000000);
+    document.getElementById('bookFormCategory').value = 'Computer Science';
+    document.getElementById('bookFormEdition').value = '1st Edition';
+    document.getElementById('bookFormShelf').value = 'Shelf A-01';
+    document.getElementById('bookFormTotalQty').value = '10';
+    document.getElementById('bookFormAvailQty').value = '10';
+    document.getElementById('bookFormThreshold').value = this.settings.defaultThreshold || '3';
+    document.getElementById('bookFormAvgDemand').value = '2.5';
+
+    this.openModal('bookModal');
+  },
+
+  openEditBookModal(bookId) {
+    const book = this.books.find(b => b.id === bookId);
+    if (!book) return;
+
+    document.getElementById('bookModalTitle').textContent = 'Edit Book Details';
+    document.getElementById('bookFormMode').value = 'edit';
+    document.getElementById('bookFormId').value = book.id;
+    document.getElementById('bookFormId').readOnly = true;
+    document.getElementById('bookFormTitle').value = book.title;
+    document.getElementById('bookFormAuthor').value = book.author;
+    document.getElementById('bookFormIsbn').value = book.isbn;
+    document.getElementById('bookFormCategory').value = book.category;
+    document.getElementById('bookFormEdition').value = book.edition || '1st Edition';
+    document.getElementById('bookFormShelf').value = book.shelf;
+    document.getElementById('bookFormTotalQty').value = book.totalQty;
+    document.getElementById('bookFormAvailQty').value = book.availableQty;
+    document.getElementById('bookFormThreshold').value = book.lowStockThreshold;
+
+    const forecast = this.calculateDemandForecast(book);
+    document.getElementById('bookFormAvgDemand').value = forecast.dailyAvg;
+
+    this.openModal('bookModal');
+  },
+
+  onTotalQtyChange() {
+    const mode = document.getElementById('bookFormMode').value;
+    if (mode === 'add') {
+      const total = parseInt(document.getElementById('bookFormTotalQty').value, 10) || 0;
+      document.getElementById('bookFormAvailQty').value = total;
+    }
+  },
+
+  handleBookFormSubmit() {
+    const mode = document.getElementById('bookFormMode').value;
+    const id = document.getElementById('bookFormId').value.trim();
+    const title = document.getElementById('bookFormTitle').value.trim();
+    const author = document.getElementById('bookFormAuthor').value.trim();
+    const isbn = document.getElementById('bookFormIsbn').value.trim();
+    const category = document.getElementById('bookFormCategory').value.trim();
+    const edition = document.getElementById('bookFormEdition').value.trim();
+    const shelf = document.getElementById('bookFormShelf').value.trim();
+    const totalQty = parseInt(document.getElementById('bookFormTotalQty').value, 10);
+    const availableQty = parseInt(document.getElementById('bookFormAvailQty').value, 10);
+    const threshold = parseInt(document.getElementById('bookFormThreshold').value, 10);
+    const avgDemand = parseFloat(document.getElementById('bookFormAvgDemand').value) || 2.5;
+
+    // Strict Validations
+    if (!id || !title || !author || !isbn || !category || !shelf) {
+      alert('Please fill in all required fields marked with *.');
+      return;
+    }
+
+    if (totalQty < 1) {
+      alert('Total physical copies must be at least 1.');
+      return;
+    }
+
+    if (availableQty < 0) {
+      alert('Available copies cannot be negative.');
+      return;
+    }
+
+    if (availableQty > totalQty) {
+      alert('Available copies cannot exceed total physical copies.');
+      return;
+    }
+
+    if (mode === 'add') {
+      if (this.books.some(b => b.id.toLowerCase() === id.toLowerCase())) {
+        alert('A book with this ID already exists. Please choose a unique ID.');
+        return;
+      }
+
+      // Generate realistic daily demand array matching daily demand input
+      const dayDemand = Math.max(1, Math.round(avgDemand));
+      const histDemand = [dayDemand, dayDemand + 1, Math.max(1, dayDemand - 1), dayDemand, dayDemand + 2, dayDemand, dayDemand + 1];
+
+      const newBook = {
+        id,
+        title,
+        author,
+        isbn,
+        category,
+        edition,
+        shelf,
+        totalQty,
+        availableQty,
+        borrowedQty: totalQty - availableQty,
+        lowStockThreshold: threshold,
+        historicalDemand: histDemand
+      };
+
+      this.books.unshift(newBook);
+      this.logActivity('restock', `Staff added new textbook: "${title}" (${id}).`);
+      this.showToast(`Textbook "${title}" successfully catalogued!`, 'success');
+    } else {
+      const book = this.books.find(b => b.id === id);
+      if (!book) return;
+
+      book.title = title;
+      book.author = author;
+      book.isbn = isbn;
+      book.category = category;
+      book.edition = edition;
+      book.shelf = shelf;
+      book.totalQty = totalQty;
+      book.availableQty = availableQty;
+      book.borrowedQty = Math.max(0, totalQty - availableQty);
+      book.lowStockThreshold = threshold;
+
+      this.logActivity('restock', `Staff updated book details for "${title}" (${id}).`);
+      this.showToast(`Updated "${title}".`, 'success');
+    }
+
+    this.saveState();
+    this.closeModal('bookModal');
+    this.populateCategoryFilters();
+    this.renderAll();
+  },
+
+  confirmDeleteBook(bookId) {
+    const book = this.books.find(b => b.id === bookId);
+    if (!book) return;
+
+    if (confirm(`Are you sure you want to delete "${book.title}" (${book.id}) from the library catalogue? This cannot be undone.`)) {
+      this.books = this.books.filter(b => b.id !== bookId);
+      // Clean up linked reservations
+      this.reservations = this.reservations.filter(r => r.bookId !== bookId);
+      this.saveState();
+
+      this.logActivity('restock', `Deleted textbook "${book.title}" (${book.id}).`);
+      this.showToast(`Deleted "${book.title}".`, 'warning');
+      this.populateCategoryFilters();
+      this.renderAll();
+    }
+  },
+
+  // Open Detailed Book Modal
+  openBookDetailModal(bookId) {
+    const book = this.books.find(b => b.id === bookId);
+    if (!book) return;
+
+    const forecast = this.calculateDemandForecast(book);
+    const modalTitle = document.getElementById('detailBookTitle');
+    const modalBody = document.getElementById('detailBookBody');
+    const modalFooter = document.getElementById('detailBookFooter');
+
+    modalTitle.textContent = book.title;
+
+    let badge = `<span class="badge badge-available">✅ Available</span>`;
+    if (book.availableQty === 0) badge = `<span class="badge badge-out">🚫 Out of Stock</span>`;
+    else if (book.availableQty <= book.lowStockThreshold) badge = `<span class="badge badge-low">⚠️ Low Stock</span>`;
+
+    modalBody.innerHTML = `
+      <div style="margin-bottom:14px; display:flex; gap:8px; align-items:center;">
+        ${badge}
+        <span class="badge badge-neutral">${this.escapeHtml(book.category)}</span>
+        <span class="badge badge-neutral">${this.escapeHtml(book.edition || 'Standard')}</span>
+      </div>
+
+      <div style="font-size:13px; line-height:1.6; margin-bottom:18px;">
+        <div><strong>Author:</strong> ${this.escapeHtml(book.author)}</div>
+        <div><strong>ISBN-13:</strong> ${this.escapeHtml(book.isbn)}</div>
+        <div><strong>Catalog ID:</strong> ${this.escapeHtml(book.id)}</div>
+        <div><strong>Physical Shelf:</strong> 📍 <strong>${this.escapeHtml(book.shelf)}</strong></div>
+      </div>
+
+      <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:var(--radius-md); padding:14px; margin-bottom:18px;">
+        <h4 style="font-size:12.5px; font-weight:700; color:var(--primary-navy); margin-bottom:8px;">Inventory Status</h4>
+        <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:8px; text-align:center;">
+          <div style="background:white; padding:8px; border-radius:var(--radius-sm); border:1px solid #edf2f7;">
+            <div style="font-size:10px; color:var(--text-muted);">TOTAL</div>
+            <div style="font-size:16px; font-weight:800;">${book.totalQty}</div>
+          </div>
+          <div style="background:white; padding:8px; border-radius:var(--radius-sm); border:1px solid #edf2f7;">
+            <div style="font-size:10px; color:var(--text-muted);">AVAILABLE</div>
+            <div style="font-size:16px; font-weight:800; color:${book.availableQty === 0 ? '#ef4444' : '#10b981'};">${book.availableQty}</div>
+          </div>
+          <div style="background:white; padding:8px; border-radius:var(--radius-sm); border:1px solid #edf2f7;">
+            <div style="font-size:10px; color:var(--text-muted);">BORROWED</div>
+            <div style="font-size:16px; font-weight:800;">${book.borrowedQty}</div>
+          </div>
+          <div style="background:white; padding:8px; border-radius:var(--radius-sm); border:1px solid #edf2f7;">
+            <div style="font-size:10px; color:var(--text-muted);">THRESHOLD</div>
+            <div style="font-size:16px; font-weight:800;">${book.lowStockThreshold}</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="background:linear-gradient(135deg, #f5f3ff, #eff6ff); border:1px solid #c7d2fe; border-radius:var(--radius-md); padding:14px;">
+        <h4 style="font-size:12.5px; font-weight:700; color:#4338ca; margin-bottom:6px;">📈 AI Demand Forecasting Insights</h4>
+        <p style="font-size:12px; color:#3730a3; margin-bottom:8px;">
+          Historical daily average: <strong>${forecast.dailyAvg} checkouts/day</strong> &bull;
+          Estimated next 7-day demand: <strong>${forecast.expected7DayDemand} copies</strong>.
+        </p>
+        <div style="display:flex; justify-content:space-between; align-items:center; font-size:12px;">
+          <span>Stockout Risk: <strong style="color:${forecast.riskClass === 'risk' ? '#dc2626' : '#16a34a'};">${forecast.risk}</strong></span>
+          <span>Suggested Restock: <strong>${forecast.suggestedRestock} copies</strong></span>
+        </div>
+      </div>
+    `;
+
+    modalFooter.innerHTML = `
+      <button class="btn btn-secondary btn-sm" data-close="bookDetailModal">Close</button>
+      ${book.availableQty > 0 ? `
+        <button class="btn btn-primary btn-sm" onclick="App.closeModal('bookDetailModal'); App.borrowBook('${book.id}');">Borrow Now</button>
+      ` : `
+        <button class="btn btn-purple btn-sm" onclick="App.closeModal('bookDetailModal'); App.openCreateReservationModal('${book.id}');">Join Waitlist</button>
+      `}
+      <button class="btn btn-secondary btn-sm" onclick="App.closeModal('bookDetailModal'); App.openRestockModal('${book.id}');">Restock</button>
+    `;
+
+    this.openModal('bookDetailModal');
+  },
+
+  // =========================================================================
+  // AI DEMAND FORECASTING TABLE
+  // =========================================================================
+  renderForecastTable() {
+    const tbody = document.getElementById('forecastTableBody');
+    if (!tbody) return;
+
+    let html = '';
+    this.books.forEach(book => {
+      const forecast = this.calculateDemandForecast(book);
+      const isOut = book.availableQty === 0;
+
+      let riskBadge = `<span class="badge badge-available">🟢 Low Risk</span>`;
+      if (forecast.riskClass === 'risk') {
+        riskBadge = `<span class="badge badge-out">🔴 High Stockout Risk</span>`;
+      } else if (forecast.riskClass === 'medium') {
+        riskBadge = `<span class="badge badge-low">🟡 Medium Risk</span>`;
+      }
+
+      // Sparkline mini CSS bar
+      const sparkHtml = forecast.history.map(val => {
+        const height = Math.min(22, Math.max(4, val * 2.2));
+        return `<div title="${val} requests" style="width:6px; height:${height}px; background:#6366f1; border-radius:1px;"></div>`;
+      }).join('');
+
+      html += `
+        <tr>
+          <td>
+            <div style="font-weight:700; color:var(--primary-navy);">${this.escapeHtml(book.title)}</div>
+            <div style="font-size:11px; color:var(--text-muted);">${this.escapeHtml(book.category)} • ${book.shelf}</div>
+          </td>
+          <td>
+            <strong style="font-size:15px; color:${isOut ? '#ef4444' : '#059669'};">${book.availableQty}</strong>
+            <span style="font-size:11px; color:var(--text-muted);">/ ${book.totalQty} total</span>
+          </td>
+          <td>
+            <div style="display:flex; align-items:flex-end; gap:3px; height:24px; padding-top:2px;">
+              ${sparkHtml}
+              <span style="font-size:11px; color:var(--text-muted); margin-left:6px;">avg ${forecast.dailyAvg}/day</span>
+            </div>
+          </td>
+          <td>
+            <strong style="font-size:14px;">~${forecast.expected7DayDemand}</strong> requests
+          </td>
+          <td>${riskBadge}</td>
+          <td>
+            ${forecast.suggestedRestock > 0 ? `
+              <strong style="color:#d97706;">+${forecast.suggestedRestock} copies</strong>
+            ` : `
+              <span style="color:#10b981;">Stock sufficient</span>
+            `}
+          </td>
+          <td style="text-align:right;">
+            <button class="btn btn-secondary btn-sm" onclick="App.openRestockModal('${book.id}')">Restock</button>
+          </td>
+        </tr>
+      `;
+    });
+
+    tbody.innerHTML = html;
+  },
+
+  // =========================================================================
+  // RESERVATIONS & WAITING LIST
+  // =========================================================================
+  openCreateReservationModal(preselectedBookId) {
+    const select = document.getElementById('reserveBookSelect');
+    if (!select) return;
+
+    let options = '';
+    this.books.forEach(b => {
+      const statusText = b.availableQty > 0 ? `(${b.availableQty} Available)` : `(Out of Stock — Waitlist)`;
+      options += `<option value="${b.id}" ${b.id === preselectedBookId ? 'selected' : ''}>${this.escapeHtml(b.title)} ${statusText}</option>`;
+    });
+    select.innerHTML = options;
+
+    document.getElementById('reserveStudentName').value = this.settings.studentName || 'Alex Chen';
+    document.getElementById('reserveStudentId').value = this.settings.studentId || 'STU-2026-88';
+    
+    this.updateReservationNotice();
+    select.onchange = () => this.updateReservationNotice();
+
+    this.openModal('reservationModal');
+  },
+
+  updateReservationNotice() {
+    const bookId = document.getElementById('reserveBookSelect').value;
+    const book = this.books.find(b => b.id === bookId);
+    const noticeBox = document.getElementById('reservationNoticeBox');
+    const submitBtn = document.getElementById('reserveSubmitBtn');
+
+    if (!book) return;
+
+    if (book.availableQty > 0) {
+      noticeBox.style.background = '#ecfdf5';
+      noticeBox.style.color = '#065f46';
+      noticeBox.style.border = '1px solid #a7f3d0';
+      noticeBox.innerHTML = `✅ <strong>Copies are currently available (${book.availableQty} on ${book.shelf})</strong>. This reservation will hold a copy for pickup.`;
+      submitBtn.textContent = 'Confirm Hold & Reservation';
+    } else {
+      noticeBox.style.background = '#eff6ff';
+      noticeBox.style.color = '#1e40af';
+      noticeBox.style.border = '1px solid #bfdbfe';
+      noticeBox.innerHTML = `ℹ️ <strong>0 physical copies currently available</strong>. You will be placed on the <strong>Automated Waiting List</strong>. When a copy is returned or restocked, you will receive an in-app notification.`;
+      submitBtn.textContent = 'Join Automated Waitlist';
+    }
+  },
+
+  handleReservationSubmit() {
+    const bookId = document.getElementById('reserveBookSelect').value;
+    const studentName = document.getElementById('reserveStudentName').value.trim();
+    const studentId = document.getElementById('reserveStudentId').value.trim();
+
+    if (!bookId || !studentName || !studentId) {
+      alert('Please fill in student name and student ID.');
+      return;
+    }
+
+    const book = this.books.find(b => b.id === bookId);
+    if (!book) return;
+
+    const resId = 'RSV-' + Math.floor(100 + Math.random() * 900);
+    const isWaitlist = book.availableQty === 0;
+
+    const reservation = {
+      id: resId,
+      bookId: book.id,
+      studentName,
+      studentId,
+      status: isWaitlist ? 'WAITLISTED' : 'READY_FOR_PICKUP',
+      date: new Date().toISOString().replace('T', ' ').slice(0, 16)
+    };
+
+    if (!isWaitlist) {
+      // Hold 1 physical copy
+      book.availableQty -= 1;
+    }
+
+    this.reservations.unshift(reservation);
+    this.saveState();
+    this.closeModal('reservationModal');
+
+    const activityMsg = isWaitlist
+      ? `Student ${studentName} joined waitlist for "${book.title}".`
+      : `Student ${studentName} reserved available copy of "${book.title}".`;
+    this.logActivity('reserve', activityMsg);
+
+    this.showToast(isWaitlist ? `Joined waitlist for "${book.title}".` : `Book reserved for ${studentName}!`, 'success');
+    this.renderAll();
+  },
+
+  cancelReservation(resId) {
+    const res = this.reservations.find(r => r.id === resId);
+    if (!res) return;
+
+    if (confirm(`Cancel reservation #${res.id} for ${res.studentName}?`)) {
+      // If was ready for pickup, release held copy back to available
+      if (res.status === 'READY_FOR_PICKUP') {
+        const book = this.books.find(b => b.id === res.bookId);
+        if (book) {
+          book.availableQty += 1;
+        }
+      }
+
+      this.reservations = this.reservations.filter(r => r.id !== resId);
+      this.saveState();
+
+      this.logActivity('reserve', `Cancelled reservation #${resId} for ${res.studentName}.`);
+      this.showToast(`Reservation #${resId} cancelled.`, 'warning');
+      this.renderAll();
+    }
+  },
+
+  fulfillReservation(resId) {
+    const res = this.reservations.find(r => r.id === resId);
+    if (!res) return;
+
+    const book = this.books.find(b => b.id === res.bookId);
+    if (!book) return;
+
+    res.status = 'FULFILLED';
+    book.borrowedQty += 1; // Officially checked out
+    this.saveState();
+
+    this.logActivity('borrow', `Student ${res.studentName} picked up reserved copy of "${book.title}".`);
+    this.showToast(`Reservation #${resId} fulfilled. Copy checked out!`, 'success');
+    this.renderAll();
+  },
+
+  renderReservationsTable() {
+    const tbody = document.getElementById('reservationsTableBody');
+    if (!tbody) return;
+
+    if (this.reservations.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:24px; color:var(--text-muted);">No active reservations or waitlists.</td></tr>`;
+      return;
+    }
+
+    let html = '';
+    this.reservations.forEach(res => {
+      const book = this.books.find(b => b.id === res.bookId);
+      const title = book ? book.title : 'Unknown Book';
+
+      let statusBadge = '';
+      if (res.status === 'WAITLISTED') {
+        statusBadge = `<span class="badge badge-low">⏳ Waitlisted (Awaiting Stock)</span>`;
+      } else if (res.status === 'READY_FOR_PICKUP') {
+        statusBadge = `<span class="badge badge-available">🎁 Ready for Pickup (Shelf ${book ? book.shelf : 'Desk'})</span>`;
+      } else if (res.status === 'FULFILLED') {
+        statusBadge = `<span class="badge badge-neutral">Checked Out (Completed)</span>`;
+      }
+
+      html += `
+        <tr>
+          <td><code style="font-weight:700;">${res.id}</code></td>
+          <td><strong>${this.escapeHtml(res.studentName)}</strong></td>
+          <td>${this.escapeHtml(res.studentId)}</td>
+          <td>
+            <div style="font-weight:600; color:var(--primary-navy);">${this.escapeHtml(title)}</div>
+            <div style="font-size:11px; color:var(--text-muted);">Book ID: ${res.bookId}</div>
+          </td>
+          <td>${statusBadge}</td>
+          <td>${res.date}</td>
+          <td style="text-align:right; white-space:nowrap;">
+            ${res.status === 'READY_FOR_PICKUP' ? `
+              <button class="btn btn-primary btn-sm" onclick="App.fulfillReservation('${res.id}')">Pick Up</button>
+            ` : ''}
+            ${res.status !== 'FULFILLED' ? `
+              <button class="btn btn-secondary btn-sm" style="color:#ef4444;" onclick="App.cancelReservation('${res.id}')">Cancel</button>
+            ` : '<span style="color:var(--text-muted); font-size:11px;">Completed</span>'}
+          </td>
+        </tr>
+      `;
+    });
+
+    tbody.innerHTML = html;
+  },
+
+  // =========================================================================
+  // ALERTS & REPORTS
+  // =========================================================================
+  renderAlertsView() {
+    const container = document.getElementById('fullAlertsList');
+    const badgeText = document.getElementById('alertCountBadgeText');
+    const filter = document.getElementById('alertFilterSeverity')?.value || 'ALL';
+    if (!container) return;
+
+    const urgent = this.books.filter(b => b.availableQty === 0).map(b => ({ book: b, type: 'URGENT' }));
+    const low = this.books.filter(b => b.availableQty > 0 && b.availableQty <= b.lowStockThreshold).map(b => ({ book: b, type: 'LOW' }));
+    const highDemand = this.books.filter(b => {
+      const f = this.calculateDemandForecast(b);
+      return f.riskClass === 'risk' && b.availableQty > 0;
+    }).map(b => ({ book: b, type: 'DEMAND' }));
+
+    let allAlerts = [...urgent, ...low, ...highDemand];
+
+    if (filter === 'URGENT') allAlerts = allAlerts.filter(a => a.type === 'URGENT');
+    else if (filter === 'LOW') allAlerts = allAlerts.filter(a => a.type === 'LOW');
+    else if (filter === 'DEMAND') allAlerts = allAlerts.filter(a => a.type === 'DEMAND');
+
+    if (badgeText) {
+      badgeText.textContent = `${allAlerts.length} active system alert${allAlerts.length === 1 ? '' : 's'}`;
+    }
+
+    if (allAlerts.length === 0) {
+      container.innerHTML = `<div style="text-align:center; padding:24px; color:var(--text-muted);">✅ No alerts match this filter. Inventory health is nominal!</div>`;
+    } else {
+      let html = '';
+      allAlerts.forEach(item => {
+        const { book, type } = item;
+        const forecast = this.calculateDemandForecast(book);
+
+        if (type === 'URGENT') {
+          html += `
+            <div style="background:#fef2f2; border:1px solid #fecaca; border-radius:var(--radius-md); padding:14px; display:flex; justify-content:space-between; align-items:center;">
+              <div>
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <span class="badge badge-out">URGENT STOCKOUT</span>
+                  <strong style="font-size:14px; color:#991b1b;">${this.escapeHtml(book.title)}</strong>
+                </div>
+                <div style="font-size:12px; color:#b91c1c; margin-top:4px;">
+                  0 copies available &bull; Location: ${book.shelf} &bull; Expected weekly demand: ~${forecast.expected7DayDemand} copies.
+                </div>
+              </div>
+              <button class="btn btn-primary btn-sm" onclick="App.openRestockModal('${book.id}')">Restock Title</button>
+            </div>
+          `;
+        } else if (type === 'LOW') {
+          html += `
+            <div style="background:#fffbeb; border:1px solid #fde68a; border-radius:var(--radius-md); padding:14px; display:flex; justify-content:space-between; align-items:center;">
+              <div>
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <span class="badge badge-low">LOW STOCK WARNING</span>
+                  <strong style="font-size:14px; color:#92400e;">${this.escapeHtml(book.title)}</strong>
+                </div>
+                <div style="font-size:12px; color:#b45309; margin-top:4px;">
+                  Only ${book.availableQty} copies remaining (Threshold: ${book.lowStockThreshold}) &bull; Suggested reorder: ${forecast.suggestedRestock} copies.
+                </div>
+              </div>
+              <button class="btn btn-secondary btn-sm" onclick="App.openRestockModal('${book.id}')">Restock</button>
+            </div>
+          `;
+        } else if (type === 'DEMAND') {
+          html += `
+            <div style="background:#f5f3ff; border:1px solid #ddd6fe; border-radius:var(--radius-md); padding:14px; display:flex; justify-content:space-between; align-items:center;">
+              <div>
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <span class="badge badge-high">PREDICTED STOCKOUT SPIKE</span>
+                  <strong style="font-size:14px; color:#5b21b6;">${this.escapeHtml(book.title)}</strong>
+                </div>
+                <div style="font-size:12px; color:#6d28d9; margin-top:4px;">
+                  Available: ${book.availableQty} | Est. 7-Day Demand: ~${forecast.expected7DayDemand} | High risk of stock exhaustion this week!
+                </div>
+              </div>
+              <button class="btn btn-purple btn-sm" onclick="App.openRestockModal('${book.id}')">Add Safety Stock</button>
+            </div>
+          `;
+        }
+      });
+      container.innerHTML = html;
+    }
+
+    // Render Category Aggregate Summary Table
+    this.renderCategoryReport();
+  },
+
+  renderCategoryReport() {
+    const tbody = document.getElementById('categoryReportTableBody');
+    if (!tbody) return;
+
+    const categories = Array.from(new Set(this.books.map(b => b.category))).sort();
+    let html = '';
+
+    categories.forEach(cat => {
+      const catBooks = this.books.filter(b => b.category === cat);
+      const totalTitles = catBooks.length;
+      const totalCopies = catBooks.reduce((acc, b) => acc + b.totalQty, 0);
+      const availCopies = catBooks.reduce((acc, b) => acc + b.availableQty, 0);
+      const borrowCopies = catBooks.reduce((acc, b) => acc + b.borrowedQty, 0);
+      const stockouts = catBooks.filter(b => b.availableQty === 0).length;
+
+      const healthPct = totalCopies > 0 ? Math.round((availCopies / totalCopies) * 100) : 0;
+      let healthBadge = `<span class="badge badge-available">${healthPct}% Available</span>`;
+      if (healthPct < 25) healthBadge = `<span class="badge badge-out">Low (${healthPct}%)</span>`;
+      else if (healthPct < 50) healthBadge = `<span class="badge badge-low">Fair (${healthPct}%)</span>`;
+
+      html += `
+        <tr>
+          <td><strong>${this.escapeHtml(cat)}</strong></td>
+          <td>${totalTitles}</td>
+          <td>${totalCopies}</td>
+          <td><strong style="color:#059669;">${availCopies}</strong></td>
+          <td>${borrowCopies}</td>
+          <td><strong style="color:${stockouts > 0 ? '#ef4444' : 'var(--text-muted)'};">${stockouts}</strong></td>
+          <td>${healthBadge}</td>
+        </tr>
+      `;
+    });
+
+    tbody.innerHTML = html;
+  },
+
+  // =========================================================================
+  // CAMPUSBOOK AI CHATBOT (RULE-BASED NLP & INVENTORY REASONING)
+  // =========================================================================
+  initChatWelcome() {
+    const messages = document.getElementById('chatMessages');
+    if (!messages) return;
+
+    messages.innerHTML = `
+      <div class="message-row bot">
+        <div class="message-bubble">
+          <strong>Hello! I am your CampusBook AI Assistant 📚🤖</strong>
+          <p style="margin-top:6px;">
+            I can help you check real-time textbook availability, locate physical shelves, identify books at risk of running out, and create reservations.
+          </p>
+          <p style="margin-top:6px; font-size:12px; color:var(--text-muted);">
+            <em>Try clicking one of the suggested prompts below or ask any question about our library collection!</em>
+          </p>
+          <div class="message-time">${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
+        </div>
+      </div>
+    `;
+  },
+
+  clearChat() {
+    this.initChatWelcome();
+    this.showToast('Conversation cleared.', 'success');
+  },
+
+  sendUserPrompt(promptText) {
+    document.getElementById('chatInputField').value = promptText;
+    this.handleChatSubmit();
+  },
+
+  openChatWithPrompt(promptText) {
+    this.navigate('chatbot');
+    setTimeout(() => {
+      this.sendUserPrompt(promptText);
+    }, 150);
+  },
+
+  handleChatSubmit() {
+    const input = document.getElementById('chatInputField');
+    const query = input.value.trim();
+    if (!query) return;
+
+    input.value = '';
+    this.appendChatMessage('user', query);
+
+    // Simulate instant local intelligence thinking state
+    setTimeout(() => {
+      const response = this.processChatbotMessage(query);
+      this.appendChatMessage('bot', response);
+    }, 200);
+  },
+
+  appendChatMessage(sender, textOrHtml) {
+    const container = document.getElementById('chatMessages');
+    if (!container) return;
+
+    const row = document.createElement('div');
+    row.className = `message-row ${sender}`;
+
+    const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+    row.innerHTML = `
+      <div class="message-bubble">
+        ${textOrHtml}
+        <div class="message-time">${timeStr}</div>
+      </div>
+    `;
+
+    container.appendChild(row);
+    container.scrollTop = container.scrollHeight;
+  },
+
+  // Rule-based NLP Query Parser
+  processChatbotMessage(query) {
+    const q = query.toLowerCase();
+
+    // 1. "Out of Stock" query
+    if (q.includes('out of stock') || q.includes('zero copies') || q.includes('unavailable')) {
+      const out = this.books.filter(b => b.availableQty === 0);
+      if (out.length === 0) {
+        return `🎉 Great news! All <strong>${this.books.length}</strong> catalogued textbooks currently have available physical copies on shelves.`;
+      }
+      let html = `<p>I checked our live inventory. The following <strong>${out.length} titles are currently Out of Stock</strong>:</p><ul style="margin:8px 0 8px 18px; line-height:1.6;">`;
+      out.forEach(b => {
+        html += `<li><strong>${this.escapeHtml(b.title)}</strong> (Shelf ${b.shelf}) &mdash; <button class="btn btn-secondary btn-sm" style="padding:1px 6px; font-size:10.5px;" onclick="App.openCreateReservationModal('${b.id}')">Join Waitlist</button></li>`;
+      });
+      html += `</ul><p style="font-size:11.5px; color:var(--text-muted);">Would you like me to add you to the waiting list for any of these titles?</p>`;
+      return html;
+    }
+
+    // 2. "Low Stock" query
+    if (q.includes('low stock') || q.includes('running low') || q.includes('almost out')) {
+      const low = this.books.filter(b => b.availableQty > 0 && b.availableQty <= b.lowStockThreshold);
+      if (low.length === 0) {
+        return `✅ No books are currently under their low-stock safety threshold!`;
+      }
+      let html = `<p>The following <strong>${low.length} textbooks have low physical stock</strong>:</p><ul style="margin:8px 0 8px 18px; line-height:1.6;">`;
+      low.forEach(b => {
+        html += `<li><strong>${this.escapeHtml(b.title)}</strong> &mdash; <strong>${b.availableQty} copies remaining</strong> at <em>${b.shelf}</em> (Threshold: ${b.lowStockThreshold})</li>`;
+      });
+      html += `</ul><p style="font-size:11.5px; color:var(--text-muted);">Staff are advised to restock these items soon.</p>`;
+      return html;
+    }
+
+    // 3. "Run out this week" / Forecast Query
+    if (q.includes('run out') || q.includes('demand') || q.includes('forecast') || q.includes('predict') || q.includes('stockout')) {
+      const highRisk = this.books.map(b => ({ book: b, f: this.calculateDemandForecast(b) }))
+        .filter(item => item.f.riskClass === 'risk' || item.f.riskClass === 'medium');
+
+      if (highRisk.length === 0) {
+        return `📈 Based on our 7-day checkout moving average, all books have sufficient copies to meet projected student demand this week!`;
+      }
+
+      let html = `<p>Here is our <strong>7-Day Predictive Stockout Analysis</strong>:</p><ul style="margin:8px 0 8px 18px; line-height:1.6;">`;
+      highRisk.slice(0, 5).forEach(item => {
+        const { book, f } = item;
+        html += `<li><strong>${this.escapeHtml(book.title)}</strong>: Current stock is <strong>${book.availableQty}</strong>, but predicted 7-day demand is <strong>~${f.expected7DayDemand} copies</strong>. <span style="color:#ef4444; font-weight:600;">[${f.risk}]</span></li>`;
+      });
+      html += `</ul><p style="font-size:11.5px; color:var(--text-muted);">💡 <em>Calculated via moving-average checkout velocity and safety stock buffers.</em></p>`;
+      return html;
+    }
+
+    // 4. "How do I reserve" / Reservation Guide
+    if (q.includes('how do i reserve') || q.includes('how to reserve') || q.includes('reservation process')) {
+      return `
+        <p><strong>Reserving a book is simple:</strong></p>
+        <ol style="margin:8px 0 8px 18px; line-height:1.6; font-size:12.5px;">
+          <li>Navigate to the <strong>Find Books</strong> tab or ask me directly for the title.</li>
+          <li>If copies are available, click <strong>Borrow</strong> or <strong>Reserve</strong> to hold a copy.</li>
+          <li>If the book is Out of Stock, click <strong>Join Waitlist</strong>. When someone returns a copy or staff restock it, our system will automatically notify you!</li>
+        </ol>
+      `;
+    }
+
+    // 5. Reservation intent in chat: "Reserve [Book]"
+    if (q.startsWith('reserve ') || q.includes('i want to reserve') || q.includes('book reservation')) {
+      const matches = this.books.filter(b => {
+        return q.includes(b.title.toLowerCase()) ||
+          q.includes(b.category.toLowerCase()) ||
+          (q.includes('python') && b.title.toLowerCase().includes('python')) ||
+          (q.includes('dbms') && b.title.toLowerCase().includes('database')) ||
+          (q.includes('os') && b.title.toLowerCase().includes('operating system')) ||
+          (q.includes('ai') && b.title.toLowerCase().includes('artificial intelligence')) ||
+          (q.includes('ml') && b.title.toLowerCase().includes('machine learning'));
+      });
+
+      if (matches.length === 1) {
+        const book = matches[0];
+        return `
+          <p>I found matching title: <strong>${this.escapeHtml(book.title)}</strong> (${book.availableQty} available at ${book.shelf}).</p>
+          <p style="margin-top:6px;">
+            <button class="btn btn-primary btn-sm" onclick="App.openCreateReservationModal('${book.id}')">Proceed with Reservation for ${this.escapeHtml(book.id)}</button>
+          </p>
+        `;
+      } else if (matches.length > 1) {
+        let html = `<p>I found multiple titles matching that topic. Which one would you like to reserve?</p><ul style="margin:8px 0 8px 18px;">`;
+        matches.forEach(b => {
+          html += `<li><strong>${this.escapeHtml(b.title)}</strong> (${b.availableQty} avail) &mdash; <button class="btn btn-secondary btn-sm" style="padding:1px 6px; font-size:11px;" onclick="App.openCreateReservationModal('${b.id}')">Select</button></li>`;
+        });
+        html += `</ul>`;
+        return html;
+      }
+    }
+
+    // 6. Recommendations for Subject Areas (AI, ML, Web, Networks, etc.)
+    if (q.includes('recommend') || q.includes('suggestion') || q.includes('major') || q.includes('ai/ml') || q.includes('cs student')) {
+      let recs = this.books.filter(b => b.category.includes('Intelligence') || b.category.includes('Learning') || b.category.includes('Science') || b.category.includes('Algorithms'));
+      let html = `<p>Here are recommended textbooks for computer science & AI/ML students:</p><ul style="margin:8px 0 8px 18px; line-height:1.6;">`;
+      recs.slice(0, 4).forEach(b => {
+        html += `<li><strong>${this.escapeHtml(b.title)}</strong> by ${this.escapeHtml(b.author)} (${b.availableQty} copies available at <em>${b.shelf}</em>)</li>`;
+      });
+      html += `</ul><p style="font-size:11.5px; color:var(--text-muted);">You can find all of them in the Find Books tab!</p>`;
+      return html;
+    }
+
+    // 7. Keyword matching for specific titles / topics
+    const keywords = [
+      { key: 'python', name: 'Python' },
+      { key: 'dbms', name: 'Database' },
+      { key: 'database', name: 'Database' },
+      { key: 'algorithm', name: 'Algorithms' },
+      { key: 'clrs', name: 'Algorithms' },
+      { key: 'operating system', name: 'Operating System' },
+      { key: 'network', name: 'Networking' },
+      { key: 'artificial intelligence', name: 'Artificial Intelligence' },
+      { key: 'machine learning', name: 'Machine Learning' },
+      { key: 'deep learning', name: 'Deep Learning' },
+      { key: 'java', name: 'Java' },
+      { key: 'web', name: 'Web' },
+      { key: 'math', name: 'Mathematics' },
+      { key: 'software engineering', name: 'Software Engineering' }
+    ];
+
+    for (const kw of keywords) {
+      if (q.includes(kw.key)) {
+        const matches = this.books.filter(b => b.title.toLowerCase().includes(kw.key) || b.category.toLowerCase().includes(kw.key));
+        if (matches.length > 0) {
+          let html = `<p>I located <strong>${matches.length} title${matches.length === 1 ? '' : 's'} related to "${kw.name}"</strong> in our catalog:</p><div style="display:flex; flex-direction:column; gap:8px; margin:8px 0;">`;
+          matches.forEach(b => {
+            const availText = b.availableQty > 0
+              ? `<span style="color:#059669; font-weight:600;">${b.availableQty} copies available</span>`
+              : `<span style="color:#dc2626; font-weight:600;">Out of Stock</span>`;
+            html += `
+              <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:var(--radius-sm); padding:8px 10px; font-size:12px;">
+                <div style="font-weight:700; color:var(--primary-navy);">${this.escapeHtml(b.title)}</div>
+                <div style="color:var(--text-muted); margin-top:2px;">Location: 📍 ${b.shelf} &bull; ${availText}</div>
+                <div style="margin-top:4px;">
+                  <button class="btn btn-secondary btn-sm" style="padding:2px 6px; font-size:10px;" onclick="App.openBookDetailModal('${b.id}')">View Details</button>
+                  ${b.availableQty > 0 ? `
+                    <button class="btn btn-primary btn-sm" style="padding:2px 6px; font-size:10px;" onclick="App.borrowBook('${b.id}')">Borrow</button>
+                  ` : `
+                    <button class="btn btn-purple btn-sm" style="padding:2px 6px; font-size:10px;" onclick="App.openCreateReservationModal('${b.id}')">Waitlist</button>
+                  `}
+                </div>
+              </div>
+            `;
+          });
+          html += `</div>`;
+          return html;
+        }
+      }
+    }
+
+    // Default Fallback
+    return `
+      <p>I understand you're inquiring about: <em>"${this.escapeHtml(query)}"</em>.</p>
+      <p style="margin-top:6px;">
+        As a local rule-based assistant, I can immediately assist you with:
+      </p>
+      <ul style="margin:8px 0 8px 18px; line-height:1.6; font-size:12px;">
+        <li>Finding books by title or subject (e.g., <em>"Find Python books"</em>, <em>"Is DBMS available?"</em>)</li>
+        <li>Stock alerts (e.g., <em>"Which books are out of stock?"</em>, <em>"Show low stock books"</em>)</li>
+        <li>7-day demand projections (e.g., <em>"Which books may run out this week?"</em>)</li>
+        <li>Textbook reservations and waiting list guidance</li>
+      </ul>
+    `;
+  },
+
+  // =========================================================================
+  // SETTINGS & STORAGE MANAGEMENT
+  // =========================================================================
+  renderSettingsView() {
+    const statsEl = document.getElementById('storageStatsText');
+    if (!statsEl) return;
+
+    let totalChars = 0;
+    for (let key in localStorage) {
+      if (localStorage.hasOwnProperty(key)) {
+        totalChars += (localStorage[key].length + key.length);
+      }
+    }
+    const kbUsed = (totalChars / 1024).toFixed(2);
+    statsEl.textContent = `Storage usage: ~${kbUsed} KB used across ${this.books.length} book titles, ${this.reservations.length} reservations, and ${this.activities.length} activity logs.`;
+
+    document.getElementById('settingDefaultThreshold').value = this.settings.defaultThreshold || 3;
+    document.getElementById('settingStudentName').value = this.settings.studentName || 'Alex Chen';
+    document.getElementById('settingStudentId').value = this.settings.studentId || 'STU-2026-88';
+  },
+
+  saveSettings() {
+    const thresh = parseInt(document.getElementById('settingDefaultThreshold').value, 10) || 3;
+    const name = document.getElementById('settingStudentName').value.trim() || 'Alex Chen';
+    const id = document.getElementById('settingStudentId').value.trim() || 'STU-2026-88';
+
+    this.settings.defaultThreshold = thresh;
+    this.settings.studentName = name;
+    this.settings.studentId = id;
+
+    this.saveState();
+    this.showToast('Preferences saved successfully.', 'success');
+  },
+
+  confirmResetDemoData() {
+    if (confirm('Are you sure you want to restore the original 14 demo textbooks, reservations, and default settings? Any custom changes will be reset.')) {
+      this.books = JSON.parse(JSON.stringify(INITIAL_DEMO_BOOKS));
+      this.reservations = JSON.parse(JSON.stringify(INITIAL_RESERVATIONS));
+      this.activities = JSON.parse(JSON.stringify(INITIAL_ACTIVITIES));
+      this.notifications = [
+        {
+          id: Date.now(),
+          text: 'Demo dataset restored to original sample data.',
+          date: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          read: false
+        }
+      ];
+      this.settings = {
+        defaultThreshold: 3,
+        studentName: 'Alex Chen',
+        studentId: 'STU-2026-88'
+      };
+
+      this.saveState();
+      this.populateCategoryFilters();
+      this.renderAll();
+      this.showToast('Demo data restored successfully!', 'success');
+    }
+  },
+
+  exportInventoryJson() {
+    const data = {
+      books: this.books,
+      reservations: this.reservations,
+      settings: this.settings,
+      exportedAt: new Date().toISOString()
+    };
+    const jsonStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data, null, 2));
+    const dlAnchor = document.createElement('a');
+    dlAnchor.setAttribute("href", jsonStr);
+    dlAnchor.setAttribute("download", `campusbook_inventory_${new Date().toISOString().slice(0, 10)}.json`);
+    document.body.appendChild(dlAnchor);
+    dlAnchor.click();
+    dlAnchor.remove();
+    this.showToast('Inventory exported to JSON file.', 'success');
+  },
+
+  // =========================================================================
+  // MODAL & UI HELPERS
+  // =========================================================================
+  openModal(modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) modal.classList.add('active');
+  },
+
+  closeModal(modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) modal.classList.remove('active');
+  },
+
+  showToast(message, type = 'info') {
+    const container = document.getElementById('toastContainer');
+    if (!container) return;
+
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    
+    let icon = 'ℹ️';
+    if (type === 'success') icon = '✅';
+    if (type === 'warning') icon = '⚠️';
+    if (type === 'danger') icon = '🚫';
+
+    toast.innerHTML = `
+      <span style="font-size:16px;">${icon}</span>
+      <span style="flex:1;">${this.escapeHtml(message)}</span>
+    `;
+
+    container.appendChild(toast);
+
+    setTimeout(() => {
+      toast.style.opacity = '0';
+      toast.style.transform = 'translateY(10px)';
+      toast.style.transition = 'all 0.3s ease';
+      setTimeout(() => toast.remove(), 300);
+    }, 4000);
+  },
+
+  renderNotificationsModal() {
+    const list = document.getElementById('notifList');
+    if (!list) return;
+
+    if (this.notifications.length === 0) {
+      list.innerHTML = `<div style="text-align:center; padding:16px; color:var(--text-muted); font-size:12px;">No notifications.</div>`;
+      return;
+    }
+
+    let html = '';
+    this.notifications.forEach(n => {
+      html += `
+        <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:var(--radius-sm); padding:10px; font-size:12px;">
+          <div style="color:var(--text-main); font-weight:500;">${this.escapeHtml(n.text)}</div>
+          <div style="font-size:10px; color:var(--text-light); margin-top:4px;">${n.date}</div>
+        </div>
+      `;
+      n.read = true;
+    });
+
+    this.saveState();
+    this.updateNotificationBadge();
+    list.innerHTML = html;
+  },
+
+  escapeHtml(str) {
+    if (!str) return '';
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  },
+
+  // Event Bindings
+  bindEvents() {
+    // Nav Items click
+    document.querySelectorAll('.sidebar-nav .nav-item').forEach(item => {
+      item.addEventListener('click', () => {
+        const target = item.getAttribute('data-target');
+        if (target) this.navigate(target);
+      });
+    });
+
+    // Mobile Hamburger
+    const menuBtn = document.getElementById('mobileMenuBtn');
+    if (menuBtn) {
+      menuBtn.addEventListener('click', () => {
+        document.getElementById('appSidebar').classList.toggle('open');
+      });
+    }
+
+    // Modal Close Buttons
+    document.querySelectorAll('[data-close]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const modalId = btn.getAttribute('data-close');
+        this.closeModal(modalId);
+      });
+    });
+
+    // Close modal when clicking outside box
+    document.querySelectorAll('.modal-overlay').forEach(modal => {
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+          modal.classList.remove('active');
+        }
+      });
+    });
+
+    // Notifications Button
+    const notifBtn = document.getElementById('notifBellBtn');
+    if (notifBtn) {
+      notifBtn.addEventListener('click', () => {
+        this.renderNotificationsModal();
+        this.openModal('notifModal');
+      });
+    }
+
+    const clearNotifs = document.getElementById('clearNotifsBtn');
+    if (clearNotifs) {
+      clearNotifs.addEventListener('click', () => {
+        this.notifications = [];
+        this.saveState();
+        this.updateNotificationBadge();
+        this.renderNotificationsModal();
+      });
+    }
+
+    // Quick Add Button in Topbar
+    const quickAdd = document.getElementById('quickAddBookBtn');
+    if (quickAdd) {
+      quickAdd.addEventListener('click', () => this.openAddBookModal());
+    }
+
+    // Global Search Bar in Topbar
+    const globalSearch = document.getElementById('globalSearchInput');
+    if (globalSearch) {
+      globalSearch.addEventListener('input', (e) => {
+        const query = e.target.value.trim();
+        if (query.length > 0) {
+          if (this.currentSection !== 'catalogue') {
+            this.navigate('catalogue');
+          }
+          const catInput = document.getElementById('catalogueSearchInput');
+          if (catInput) {
+            catInput.value = query;
+            this.applyFilters();
+          }
+        }
+      });
+    }
+  }
+};
+
+// Initialize when DOM content is ready
+document.addEventListener('DOMContentLoaded', () => {
+  App.init();
+});
+</script>
+
+</body>
+</html>
